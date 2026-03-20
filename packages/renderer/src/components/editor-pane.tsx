@@ -3,6 +3,9 @@ import { EditorState } from "@codemirror/state";
 import { EditorView, keymap, lineNumbers } from "@codemirror/view";
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 
+import { numiLanguage } from "../editor/numi-language";
+import { darkThemeExtension } from "../editor/numi-theme";
+
 interface EditorPaneProps {
   initialContent?: string;
   onChange: (text: string) => void;
@@ -34,6 +37,8 @@ export function EditorPane({
     const state = EditorState.create({
       doc: initialContent,
       extensions: [
+        numiLanguage,
+        ...darkThemeExtension,
         lineNumbers(),
         history(),
         keymap.of([...defaultKeymap, ...historyKeymap]),
@@ -52,7 +57,6 @@ export function EditorPane({
 
     viewRef.current = view;
 
-    // Trigger initial evaluation
     if (initialContent) {
       onChange(initialContent);
     }
