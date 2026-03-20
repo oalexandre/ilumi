@@ -5,6 +5,12 @@ export const numiApi = {
   evaluate: (document: string): Promise<LineResult[]> => {
     return ipcRenderer.invoke("numi:evaluate", document);
   },
+  getCompletions: (unitPhrase: string): Promise<string[]> => {
+    return ipcRenderer.invoke("numi:getCompletions", unitPhrase);
+  },
+  getAllUnits: (): Promise<string[]> => {
+    return ipcRenderer.invoke("numi:getAllUnits");
+  },
   getTheme: (): Promise<"dark" | "light"> => {
     return ipcRenderer.invoke("numi:getTheme");
   },

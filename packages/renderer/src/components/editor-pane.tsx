@@ -3,6 +3,7 @@ import { EditorState } from "@codemirror/state";
 import { EditorView, keymap, lineNumbers } from "@codemirror/view";
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 
+import { numiAutocompletion } from "../editor/numi-autocomplete";
 import { numiLanguage } from "../editor/numi-language";
 import { darkThemeExtension } from "../editor/numi-theme";
 
@@ -34,6 +35,7 @@ export function EditorPane({
       extensions: [
         numiLanguage,
         ...darkThemeExtension,
+        numiAutocompletion,
         lineNumbers(),
         history(),
         keymap.of([...defaultKeymap, ...historyKeymap]),

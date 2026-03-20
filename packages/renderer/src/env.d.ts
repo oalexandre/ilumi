@@ -8,6 +8,8 @@ interface NoteData {
 
 interface NumiApi {
   evaluate: (document: string) => Promise<LineResult[]>;
+  getCompletions: (unitPhrase: string) => Promise<string[]>;
+  getAllUnits: () => Promise<string[]>;
   getTheme: () => Promise<"dark" | "light">;
   setTheme: (theme: "auto" | "dark" | "light") => Promise<"dark" | "light">;
   toggleTheme: () => Promise<"dark" | "light">;

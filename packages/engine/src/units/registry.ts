@@ -82,4 +82,27 @@ export class UnitRegistry {
   getAllPhrases(): string[] {
     return [...this.phraseIndex.keys()];
   }
+
+  /** Get all units compatible with the given unit (same base dimension) */
+  getCompatiblePhrases(phrase: string): string[] {
+    const unit = this.findByPhrase(phrase);
+    if (!unit) return [];
+    const base = this.resolveBaseUnit(unit);
+
+    const compatible: string[] = [];
+    for (const [, def] of this.units) {
+      if (def.id === unit.id) continue;
+      if (this.resolveBaseUnit(def) === base) {
+        // Add the primary phrase (first one)
+        const primary = def.phrases.split(",")[0]?.trim();
+        if (primary) compatible.push(primary);
+      }
+    }
+    return compatible;
+  }
+
+  /** Get all unit definitions grouped by base */
+  getAllUnits(): UnitDefinition[] {
+    return [...this.units.values()];
+  }
 }

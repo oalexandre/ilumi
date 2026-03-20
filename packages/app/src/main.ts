@@ -49,6 +49,14 @@ function createWindow(): void {
     return doc.update(source);
   });
 
+  ipcMain.handle("numi:getCompletions", (_event, unitPhrase: string) => {
+    return unitRegistry.getCompatiblePhrases(unitPhrase);
+  });
+
+  ipcMain.handle("numi:getAllUnits", () => {
+    return unitRegistry.getAllPhrases();
+  });
+
   ipcMain.handle("numi:getTheme", () => {
     return getEffectiveTheme();
   });
