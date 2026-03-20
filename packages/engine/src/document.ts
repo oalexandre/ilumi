@@ -49,6 +49,7 @@ function collectVariableRefs(node: ASTNode): Set<string> {
         break;
       case "number":
       case "numberWithUnit":
+      case "date":
       case "comment":
       case "empty":
         break;

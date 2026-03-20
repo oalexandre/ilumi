@@ -1,3 +1,5 @@
+import { registerDurationUnits } from "../dates/index.js";
+
 import { registerCssUnits } from "./css.js";
 import type { UnitDefinition } from "./registry.js";
 import { UnitRegistry } from "./registry.js";
@@ -93,6 +95,7 @@ export function createDefaultRegistry(): UnitRegistry {
   }
 
   registerCssUnits(registry);
+  registerDurationUnits(registry);
 
   return registry;
 }

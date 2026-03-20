@@ -92,7 +92,7 @@ Postfix
   / Primary
 
 Primary
-  = FunctionCallParens / FunctionCallSpace / ParenExpr / UnitConversion / NumberWithUnit / Number / Constant / Variable
+  = FunctionCallParens / FunctionCallSpace / ParenExpr / UnitConversion / NumberWithUnit / Number / DateLiteral / Constant / Variable
 
 UnitConversion
   = n:Number __ fromUnit:UnitName __ ("in" / "to" / "as") __ toUnit:UnitName
@@ -127,6 +127,11 @@ UnitName
 NonKeywordWord
   = word:$([a-zA-Z°²³µ/][a-zA-Z0-9°²³µ/]*)
     !{ return ["in","to","as","of","off","on","mod"].includes(word.toLowerCase()); }
+
+DateLiteral
+  = keyword:("today" / "now" / "tomorrow" / "yesterday")
+    !([a-zA-Z0-9_])
+    { return { type: "date", keyword }; }
 
 Constant
   = name:$([a-zA-Z_] [a-zA-Z0-9_]*)

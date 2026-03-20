@@ -1,4 +1,5 @@
 import type { ASTNode } from "../ast.js";
+import { resolveDateLiteral } from "../dates/index.js";
 import { FunctionRegistry, getConstant } from "../functions/index.js";
 import type { UnitRegistry } from "../units/registry.js";
 
@@ -125,6 +126,11 @@ export function evaluateNodeFull(
         case "on":
           return { value: target + pct * target };
       }
+    }
+
+    case "date": {
+      const date = resolveDateLiteral(node.keyword);
+      return { value: date.getTime() };
     }
 
     case "comment":

@@ -10,7 +10,8 @@ export type ASTNode =
   | PercentNode
   | PercentOpNode
   | NumberWithUnitNode
-  | ConversionNode;
+  | ConversionNode
+  | DateLiteralNode;
 
 export interface EmptyNode {
   type: "empty";
@@ -78,4 +79,9 @@ export interface ConversionNode {
   type: "conversion";
   value: ASTNode;
   targetUnit: string;
+}
+
+export interface DateLiteralNode {
+  type: "date";
+  keyword: string;
 }
