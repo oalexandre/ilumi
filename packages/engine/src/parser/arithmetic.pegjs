@@ -46,7 +46,7 @@ Comment
   / "#" rest:$(.*)   { return { type: "comment", text: rest.trim() }; }
 
 Assignment
-  = name:Identifier !{ return KNOWN_CONSTANTS.has(name) || KNOWN_FUNCTIONS.has(name) || isUnit(name); } _ "=" _ expr:Expression
+  = name:Identifier !{ return KNOWN_CONSTANTS.has(name) || KNOWN_FUNCTIONS.has(name); } _ "=" _ expr:Expression
     { return { type: "assignment", name, value: expr }; }
 
 Empty

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import { EditorState } from "@codemirror/state";
 import { EditorView, keymap, lineNumbers } from "@codemirror/view";
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
@@ -20,16 +20,11 @@ export function EditorPane({
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
 
-  const handleUpdate = useCallback(
-    (update: { docChanged: boolean; state: EditorState; view: EditorView }) => {
-      if (update.docChanged) {
-        onChange(update.state.doc.toString());
-      }
-      const scrollTop = update.view.scrollDOM.scrollTop;
-      onScroll(scrollTop);
-    },
-    [onChange, onScroll],
-  );
+  // Store callbacks in refs so the editor effect doesn't re-run
+  const onChangeRef = useRef(onChange);
+  const onScrollRef = useRef(onScroll);
+  onChangeRef.current = onChange;
+  onScrollRef.current = onScroll;
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -42,7 +37,11 @@ export function EditorPane({
         lineNumbers(),
         history(),
         keymap.of([...defaultKeymap, ...historyKeymap]),
-        EditorView.updateListener.of(handleUpdate),
+        EditorView.updateListener.of((update) => {
+          if (update.docChanged) {
+            onChangeRef.current(update.state.doc.toString());
+          }
+        }),
         EditorView.theme({
           "&": { height: "100%" },
           ".cm-scroller": { overflow: "auto" },
@@ -58,18 +57,20 @@ export function EditorPane({
     viewRef.current = view;
 
     if (initialContent) {
-      onChange(initialContent);
+      onChangeRef.current(initialContent);
     }
 
     const scroller = view.scrollDOM;
-    const scrollHandler = () => onScroll(scroller.scrollTop);
+    const scrollHandler = () => onScrollRef.current(scroller.scrollTop);
     scroller.addEventListener("scroll", scrollHandler, { passive: true });
 
     return () => {
       scroller.removeEventListener("scroll", scrollHandler);
       view.destroy();
     };
-  }, [handleUpdate, onScroll, initialContent, onChange]);
+    // Only run on mount (or when initialContent changes via key prop)
+     
+  }, [initialContent]);
 
   return (
     <div

@@ -1,6 +1,7 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 
 import { EditorPane } from "./components/editor-pane";
+import { HelpPanel } from "./components/help-panel";
 import { ResultsPane } from "./components/results-pane";
 import { SettingsPanel } from "./components/settings-panel";
 import { TabBar } from "./components/tab-bar";
@@ -15,6 +16,15 @@ export function App(): React.JSX.Element {
     useNotes();
   const [scrollTop, setScrollTop] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+
+  // Capture initial content only when switching notes — not on every keystroke
+  const initialContentRef = useRef(activeNote?.content ?? "");
+  const prevActiveIdRef = useRef(activeId);
+  if (prevActiveIdRef.current !== activeId) {
+    initialContentRef.current = activeNote?.content ?? "";
+    prevActiveIdRef.current = activeId;
+  }
 
   const handleChange = useCallback(
     (text: string) => {
@@ -51,20 +61,22 @@ export function App(): React.JSX.Element {
         e.preventDefault();
         setShowSettings((v) => !v);
       }
-      if (e.key === "Escape" && showSettings) {
-        setShowSettings(false);
+      if (e.key === "Escape") {
+        if (showSettings) setShowSettings(false);
+        if (showHelp) setShowHelp(false);
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [showSettings]);
+  }, [showSettings, showHelp]);
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden">
-      <div className="flex flex-1 overflow-hidden">
+      <div className="titlebar-drag-region" />
+      <div className="flex flex-1 overflow-hidden app-content">
         <EditorPane
           key={activeId}
-          initialContent={activeNote?.content ?? ""}
+          initialContent={initialContentRef.current}
           onChange={handleChange}
           onScroll={handleScroll}
         />
@@ -77,8 +89,10 @@ export function App(): React.JSX.Element {
         onCreate={createNote}
         onClose={closeNote}
         onRename={renameNote}
+        onHelp={() => setShowHelp(true)}
       />
       <SettingsPanel visible={showSettings} onClose={() => setShowSettings(false)} />
+      <HelpPanel visible={showHelp} onClose={() => setShowHelp(false)} />
     </div>
   );
 }
