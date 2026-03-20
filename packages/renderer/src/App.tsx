@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 
 import { EditorPane } from "./components/editor-pane";
 import { ResultsPane } from "./components/results-pane";
+import { SettingsPanel } from "./components/settings-panel";
 import { TabBar } from "./components/tab-bar";
 import { useEngine } from "./hooks/use-engine";
 import { useNotes } from "./hooks/use-notes";
@@ -13,6 +14,7 @@ export function App(): React.JSX.Element {
   const { notes, activeNote, activeId, setActiveId, updateContent, createNote, closeNote, renameNote } =
     useNotes();
   const [scrollTop, setScrollTop] = useState(0);
+  const [showSettings, setShowSettings] = useState(false);
 
   const handleChange = useCallback(
     (text: string) => {
@@ -42,6 +44,21 @@ export function App(): React.JSX.Element {
     });
   }, [createNote, closeNote, activeId, notes.length, toggle, results]);
 
+  // Cmd/Ctrl+, for settings
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === ",") {
+        e.preventDefault();
+        setShowSettings((v) => !v);
+      }
+      if (e.key === "Escape" && showSettings) {
+        setShowSettings(false);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [showSettings]);
+
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden">
       <div className="flex flex-1 overflow-hidden">
@@ -61,6 +78,7 @@ export function App(): React.JSX.Element {
         onClose={closeNote}
         onRename={renameNote}
       />
+      <SettingsPanel visible={showSettings} onClose={() => setShowSettings(false)} />
     </div>
   );
 }
