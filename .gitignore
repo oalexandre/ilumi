@@ -2,3 +2,51 @@
 .DS_Store
 
 *.alfredworkflow
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+out/
+
+# TypeScript
+*.tsbuildinfo
+
+# Test coverage
+coverage/
+
+# Electron build artifacts
+release/
+*.dmg
+*.AppImage
+*.deb
+*.rpm
+*.exe
+*.msi
+
+# Environment and secrets
+.env
+.env.*
+
+# Editor / IDE
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# AI / internal config
+CLAUDE.md
+backlog/

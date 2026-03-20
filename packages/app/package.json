@@ -1,0 +1,14 @@
+{
+  "name": "@numi/app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@numi/engine": "workspace:*"
+  }
+}

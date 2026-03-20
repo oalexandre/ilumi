@@ -8,8 +8,8 @@
 
 Desktop version for macOS can be downloaded from the [app website](https://numi.app) or from releases page on GitHub.
 
--   [Numi for MacOS](https://cdn.numi.app/mac-v3/Numi.dmg)
--   [Numi for Windows](https://cdn.numi.app/electron/latest/numi-setup.exe)
+- [Numi for MacOS](https://cdn.numi.app/mac-v3/Numi.dmg)
+- [Numi for Windows](https://cdn.numi.app/electron/latest/numi-setup.exe)
 
 Terminal version can be installed using provided shell command (same command used to update binary).
 
@@ -29,10 +29,10 @@ Terminal version can be used this way:
 
 Most features of the Numi for macOS are supported in terminal. However, these are the features that **have not yet been implemented**:
 
--   ~Localization support~
--   ~Tokens (sum, prev, avg)~
--   ~Dates~
--   Timezone conversion
--   CSS
--   Variables
--   Plugins/extension
+- ~Localization support~
+- ~Tokens (sum, prev, avg)~
+- ~Dates~
+- Timezone conversion
+- CSS
+- Variables
+- Plugins/extension
