@@ -50,3 +50,4 @@ pnpm-debug.log*
 # AI / internal config
 CLAUDE.md
 backlog/
+planoFaturamento/
