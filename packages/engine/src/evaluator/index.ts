@@ -1,5 +1,6 @@
 import type { ASTNode } from "../ast.js";
 import { FunctionRegistry, getConstant } from "../functions/index.js";
+import type { UnitRegistry } from "../units/registry.js";
 
 import { EvalContext } from "./context.js";
 
@@ -12,79 +13,123 @@ export class EvalError extends Error {
   }
 }
 
-const registry = new FunctionRegistry();
+export interface EvalResult {
+  value: number | null;
+  unit?: string;
+}
 
-export function evaluateNode(node: ASTNode, context: EvalContext): number | null {
+export interface EvalOptions {
+  unitRegistry?: UnitRegistry;
+}
+
+const funcRegistry = new FunctionRegistry();
+
+export function evaluateNode(
+  node: ASTNode,
+  context: EvalContext,
+  options?: EvalOptions,
+): number | null {
+  return evaluateNodeFull(node, context, options).value;
+}
+
+export function evaluateNodeFull(
+  node: ASTNode,
+  context: EvalContext,
+  options?: EvalOptions,
+): EvalResult {
   switch (node.type) {
     case "number":
-      return node.value;
+      return { value: node.value };
+
+    case "numberWithUnit":
+      return { value: node.value, unit: node.unit };
+
+    case "conversion": {
+      const inner = evaluateNodeFull(node.value, context, options);
+      if (inner.value === null) {
+        throw new EvalError("Cannot convert empty value");
+      }
+      const unitReg = options?.unitRegistry;
+      if (!unitReg) {
+        throw new EvalError("Unit conversion not available");
+      }
+      if (!inner.unit) {
+        throw new EvalError("Value has no unit to convert from");
+      }
+      const fromUnit = unitReg.findByPhrase(inner.unit);
+      const toUnit = unitReg.findByPhrase(node.targetUnit);
+      if (!fromUnit) throw new EvalError(`Unknown unit "${inner.unit}"`);
+      if (!toUnit) throw new EvalError(`Unknown unit "${node.targetUnit}"`);
+      const converted = unitReg.convert(inner.value, fromUnit.id, toUnit.id);
+      return { value: converted, unit: toUnit.format };
+    }
 
     case "binary":
-      return evaluateBinary(node.op, node.left, node.right, context);
+      return { value: evaluateBinary(node.op, node.left, node.right, context, options) };
 
     case "unary":
-      return evaluateUnary(node.op, node.value, context);
+      return { value: evaluateUnary(node.op, node.value, context, options) };
 
     case "assignment": {
-      const value = evaluateNode(node.value, context);
-      if (value === null) {
+      const result = evaluateNodeFull(node.value, context, options);
+      if (result.value === null) {
         throw new EvalError(`Cannot assign empty value to "${node.name}"`);
       }
-      context.set(node.name, value);
-      return value;
+      context.set(node.name, result.value);
+      return result;
     }
 
     case "variable": {
       const constant = getConstant(node.name);
       if (constant !== undefined) {
-        return constant;
+        return { value: constant };
       }
       const value = context.get(node.name);
       if (value === undefined) {
         throw new EvalError(`Undefined variable "${node.name}"`);
       }
-      return value;
+      return { value };
     }
 
     case "call": {
       const args = node.args.map((arg) => {
-        const val = evaluateNode(arg, context);
+        const val = evaluateNode(arg, context, options);
         if (val === null) {
           throw new EvalError(`Cannot pass empty value to function "${node.name}"`);
         }
         return val;
       });
-      return registry.call(node.name, args);
+      return { value: funcRegistry.call(node.name, args) };
     }
 
     case "percent": {
-      const value = evaluateNode(node.value, context);
+      const value = evaluateNode(node.value, context, options);
       if (value === null) {
         throw new EvalError("Cannot apply percent to empty value");
       }
-      return value / 100;
+      return { value: value / 100 };
     }
 
     case "percentOp": {
-      const base = evaluateNode(node.base, context);
-      const target = evaluateNode(node.target, context);
+      const base = evaluateNode(node.base, context, options);
+      const target = evaluateNode(node.target, context, options);
       if (base === null || target === null) {
         throw new EvalError("Cannot apply percent operation to empty value");
       }
       const pct = base / 100;
       switch (node.op) {
         case "of":
-          return pct * target;
+          return { value: pct * target };
         case "off":
-          return target - pct * target;
+          return { value: target - pct * target };
         case "on":
-          return target + pct * target;
+          return { value: target + pct * target };
       }
     }
 
     case "comment":
     case "empty":
-      return null;
+      return { value: null };
 
     default: {
       const exhaustive: never = node;
@@ -98,11 +143,12 @@ function evaluateBinary(
   left: ASTNode,
   right: ASTNode,
   context: EvalContext,
+  options?: EvalOptions,
 ): number {
   // Special case: 100 + 5% means 100 * 1.05, 100 - 5% means 100 * 0.95
   if ((op === "+" || op === "-") && right.type === "percent") {
-    const l = evaluateNode(left, context);
-    const pctValue = evaluateNode(right.value, context);
+    const l = evaluateNode(left, context, options);
+    const pctValue = evaluateNode(right.value, context, options);
     if (l === null || pctValue === null) {
       throw new EvalError("Cannot perform operation on empty value");
     }
@@ -110,8 +156,8 @@ function evaluateBinary(
     return op === "+" ? l * (1 + pct) : l * (1 - pct);
   }
 
-  const l = evaluateNode(left, context);
-  const r = evaluateNode(right, context);
+  const l = evaluateNode(left, context, options);
+  const r = evaluateNode(right, context, options);
 
   if (l === null || r === null) {
     throw new EvalError("Cannot perform operation on empty value");
@@ -141,8 +187,13 @@ function evaluateBinary(
   }
 }
 
-function evaluateUnary(op: string, value: ASTNode, context: EvalContext): number {
-  const v = evaluateNode(value, context);
+function evaluateUnary(
+  op: string,
+  value: ASTNode,
+  context: EvalContext,
+  options?: EvalOptions,
+): number {
+  const v = evaluateNode(value, context, options);
   if (v === null) {
     throw new EvalError("Cannot apply unary operator to empty value");
   }

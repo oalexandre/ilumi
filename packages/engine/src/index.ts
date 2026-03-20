@@ -3,6 +3,8 @@ export { parse } from "./parser/index.js";
 export { evaluateNode, EvalContext, EvalError } from "./evaluator/index.js";
 export { Document } from "./document.js";
 export { formatNumber, formatWithUnit } from "./formatter.js";
+export { UnitRegistry, createDefaultRegistry } from "./units/index.js";
+export type { UnitDefinition } from "./units/index.js";
 
 export interface LineResult {
   line: number;
@@ -12,8 +14,10 @@ export interface LineResult {
 }
 
 import { Document } from "./document.js";
+import { createDefaultRegistry } from "./units/index.js";
 
 export function evaluate(source: string): LineResult[] {
-  const doc = new Document();
+  const registry = createDefaultRegistry();
+  const doc = new Document(registry);
   return doc.update(source);
 }

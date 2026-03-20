@@ -1,8 +1,10 @@
 import type { ASTNode } from "./ast.js";
 import { EvalContext } from "./evaluator/context.js";
-import { evaluateNode } from "./evaluator/index.js";
-import { formatNumber } from "./formatter.js";
+import { evaluateNodeFull } from "./evaluator/index.js";
+import type { EvalOptions } from "./evaluator/index.js";
+import { formatNumber, formatWithUnit } from "./formatter.js";
 import { parse } from "./parser/index.js";
+import type { UnitRegistry } from "./units/registry.js";
 
 import type { LineResult } from "./index.js";
 
@@ -42,7 +44,11 @@ function collectVariableRefs(node: ASTNode): Set<string> {
         walk(n.base);
         walk(n.target);
         break;
+      case "conversion":
+        walk(n.value);
+        break;
       case "number":
+      case "numberWithUnit":
       case "comment":
       case "empty":
         break;
@@ -56,6 +62,15 @@ function collectVariableRefs(node: ASTNode): Set<string> {
 export class Document {
   private lines: LineState[] = [];
   private context = new EvalContext();
+  private unitRegistry?: UnitRegistry;
+  private knownUnits?: Set<string>;
+
+  constructor(unitRegistry?: UnitRegistry) {
+    this.unitRegistry = unitRegistry;
+    if (unitRegistry) {
+      this.knownUnits = new Set(unitRegistry.getAllPhrases());
+    }
+  }
 
   getResults(): LineResult[] {
     return this.lines.map((l) => l.result);
@@ -65,7 +80,6 @@ export class Document {
     const newLines = source.split("\n");
     const dirty = new Set<number>();
 
-    // Detect changed lines
     for (let i = 0; i < newLines.length; i++) {
       const newSource = newLines[i] ?? "";
       const existing = this.lines[i];
@@ -74,23 +88,20 @@ export class Document {
       }
     }
 
-    // If line count changed, mark removed lines and rebuild
     if (newLines.length !== this.lines.length) {
       for (let i = newLines.length; i < this.lines.length; i++) {
         dirty.add(i);
       }
     }
 
-    // Resize lines array
     this.lines.length = newLines.length;
 
-    // Parse dirty lines
     for (const i of dirty) {
-      const source = newLines[i] ?? "";
+      const src = newLines[i] ?? "";
       try {
-        const ast = parse(source);
+        const ast = parse(src, { knownUnits: this.knownUnits });
         this.lines[i] = {
-          source,
+          source: src,
           ast,
           result: { line: i, value: null, formatted: "" },
           defines: ast.type === "assignment" ? ast.name : undefined,
@@ -98,7 +109,7 @@ export class Document {
         };
       } catch {
         this.lines[i] = {
-          source,
+          source: src,
           ast: null,
           result: { line: i, value: null, formatted: "", error: "Syntax error" },
           references: new Set(),
@@ -106,7 +117,6 @@ export class Document {
       }
     }
 
-    // Find which variables are defined by dirty lines
     const changedVars = new Set<string>();
     for (const i of dirty) {
       const line = this.lines[i];
@@ -115,7 +125,6 @@ export class Document {
       }
     }
 
-    // Mark lines that reference changed variables as dirty too
     if (changedVars.size > 0) {
       for (let i = 0; i < this.lines.length; i++) {
         if (!dirty.has(i)) {
@@ -132,19 +141,24 @@ export class Document {
       }
     }
 
-    // Re-evaluate all lines sequentially (context is order-dependent)
-    // We must evaluate all lines in order since variables accumulate
+    const evalOpts: EvalOptions = { unitRegistry: this.unitRegistry };
+
     this.context.clear();
     for (let i = 0; i < this.lines.length; i++) {
       const line = this.lines[i];
       if (!line || !line.ast) continue;
 
       try {
-        const value = evaluateNode(line.ast, this.context);
+        const result = evaluateNodeFull(line.ast, this.context, evalOpts);
         line.result = {
           line: i,
-          value,
-          formatted: value !== null ? formatNumber(value) : "",
+          value: result.value,
+          formatted:
+            result.value !== null
+              ? result.unit
+                ? formatWithUnit(result.value, result.unit)
+                : formatNumber(result.value)
+              : "",
         };
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unknown error";

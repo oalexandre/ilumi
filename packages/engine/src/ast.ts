@@ -8,7 +8,9 @@ export type ASTNode =
   | VariableNode
   | CallNode
   | PercentNode
-  | PercentOpNode;
+  | PercentOpNode
+  | NumberWithUnitNode
+  | ConversionNode;
 
 export interface EmptyNode {
   type: "empty";
@@ -64,4 +66,16 @@ export interface PercentOpNode {
   op: "of" | "off" | "on";
   base: ASTNode;
   target: ASTNode;
+}
+
+export interface NumberWithUnitNode {
+  type: "numberWithUnit";
+  value: number;
+  unit: string;
+}
+
+export interface ConversionNode {
+  type: "conversion";
+  value: ASTNode;
+  targetUnit: string;
 }

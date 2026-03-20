@@ -13,6 +13,10 @@ const grammarPath = resolve(
 const grammarSource = readFileSync(grammarPath, "utf-8");
 const parser = peggy.generate(grammarSource);
 
-export function parse(input: string): ASTNode {
-  return parser.parse(input) as ASTNode;
+export interface ParseOptions {
+  knownUnits?: Set<string>;
+}
+
+export function parse(input: string, options?: ParseOptions): ASTNode {
+  return parser.parse(input, options) as ASTNode;
 }

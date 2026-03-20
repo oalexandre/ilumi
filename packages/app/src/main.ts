@@ -1,10 +1,11 @@
 import { join } from "node:path";
 
 import { app, BrowserWindow, ipcMain } from "electron";
-import { Document } from "@engine/index";
+import { Document, createDefaultRegistry } from "@engine/index";
 
 const isDev = !app.isPackaged;
-const doc = new Document();
+const unitRegistry = createDefaultRegistry();
+const doc = new Document(unitRegistry);
 
 let mainWindow: BrowserWindow | null = null;
 
