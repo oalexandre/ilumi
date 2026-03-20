@@ -31,6 +31,21 @@ export const numiApi = {
       callback(theme);
     });
   },
+  onNewNote: (callback: () => void): void => {
+    ipcRenderer.on("numi:newNote", callback);
+  },
+  onCloseNote: (callback: () => void): void => {
+    ipcRenderer.on("numi:closeNote", callback);
+  },
+  onToggleTheme: (callback: () => void): void => {
+    ipcRenderer.on("numi:toggleTheme", callback);
+  },
+  onCopyCurrentResult: (callback: () => void): void => {
+    ipcRenderer.on("numi:copyCurrentResult", callback);
+  },
+  onCopyAllResults: (callback: () => void): void => {
+    ipcRenderer.on("numi:copyAllResults", callback);
+  },
 };
 
 contextBridge.exposeInMainWorld("numi", numiApi);

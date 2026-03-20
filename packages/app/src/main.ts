@@ -11,6 +11,7 @@ import {
 
 import { loadAllNotes, saveNote, deleteNote, generateId } from "./notes.js";
 import type { NoteData } from "./notes.js";
+import { createAppMenu } from "./menu.js";
 import { loadSettings, saveSetting } from "./settings.js";
 import { createTray } from "./tray.js";
 
@@ -121,6 +122,7 @@ app.on("before-quit", () => {
 
 app.whenReady().then(() => {
   pluginLoader.loadAll();
+  createAppMenu();
   createWindow();
   createTray(() => mainWindow);
 

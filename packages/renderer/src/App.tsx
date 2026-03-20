@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 import { EditorPane } from "./components/editor-pane";
 import { ResultsPane } from "./components/results-pane";
@@ -8,7 +8,7 @@ import { useNotes } from "./hooks/use-notes";
 import { useTheme } from "./hooks/use-theme";
 
 export function App(): React.JSX.Element {
-  useTheme();
+  const { toggle } = useTheme();
   const { results, evaluate } = useEngine();
   const { notes, activeNote, activeId, setActiveId, updateContent, createNote, closeNote, renameNote } =
     useNotes();
@@ -25,6 +25,22 @@ export function App(): React.JSX.Element {
   const handleScroll = useCallback((top: number) => {
     setScrollTop(top);
   }, []);
+
+  // Menu keyboard shortcut handlers
+  useEffect(() => {
+    window.numi.onNewNote(() => createNote());
+    window.numi.onCloseNote(() => {
+      if (notes.length > 1) closeNote(activeId);
+    });
+    window.numi.onToggleTheme(() => toggle());
+    window.numi.onCopyAllResults(() => {
+      const text = results
+        .filter((r) => r.formatted)
+        .map((r) => r.formatted)
+        .join("\n");
+      if (text) navigator.clipboard.writeText(text);
+    });
+  }, [createNote, closeNote, activeId, notes.length, toggle, results]);
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden">
