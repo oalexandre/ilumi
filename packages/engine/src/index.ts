@@ -5,6 +5,9 @@ export { Document } from "./document.js";
 export { formatNumber, formatWithUnit } from "./formatter.js";
 export { UnitRegistry, createDefaultRegistry } from "./units/index.js";
 export type { UnitDefinition } from "./units/index.js";
+export { FunctionRegistry } from "./functions/index.js";
+export { PluginHost, PluginLoader } from "./plugins/index.js";
+export type { PluginInfo, PluginLoaderOptions } from "./plugins/index.js";
 
 export interface LineResult {
   line: number;

@@ -1,10 +1,21 @@
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 
 import { app, BrowserWindow, ipcMain } from "electron";
-import { Document, createDefaultRegistry } from "@engine/index";
+import {
+  Document,
+  createDefaultRegistry,
+  FunctionRegistry,
+  PluginHost,
+  PluginLoader,
+} from "@engine/index";
 
 const isDev = !app.isPackaged;
 const unitRegistry = createDefaultRegistry();
+const funcRegistry = new FunctionRegistry();
+const pluginHost = new PluginHost(unitRegistry, funcRegistry);
+const pluginLoader = new PluginLoader(pluginHost, {
+  builtInDir: resolve(__dirname, "../../plugins/CommunityExtensions"),
+});
 const doc = new Document(unitRegistry);
 
 let mainWindow: BrowserWindow | null = null;
@@ -26,6 +37,11 @@ function createWindow(): void {
     return doc.update(source);
   });
 
+  // Hot-reload plugins on window focus
+  mainWindow.on("focus", () => {
+    pluginLoader.reload();
+  });
+
   if (isDev && process.env["ELECTRON_RENDERER_URL"]) {
     mainWindow.loadURL(process.env["ELECTRON_RENDERER_URL"]);
   } else {
@@ -34,6 +50,9 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  // Load plugins on startup
+  pluginLoader.loadAll();
+
   createWindow();
 
   app.on("activate", () => {
