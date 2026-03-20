@@ -50,6 +50,29 @@ export function evaluateNodeFull(
       return { value: node.value, unit: node.unit };
 
     case "conversion": {
+      const targetLower = node.targetUnit.toLowerCase();
+
+      // Base conversion: "255 in hex", "0xFF in binary", etc.
+      const baseFormats: Record<string, (n: number) => string> = {
+        hex: (n) => "0x" + Math.trunc(n).toString(16).toUpperCase(),
+        hexadecimal: (n) => "0x" + Math.trunc(n).toString(16).toUpperCase(),
+        binary: (n) => "0b" + (Math.trunc(n) >>> 0).toString(2),
+        bin: (n) => "0b" + (Math.trunc(n) >>> 0).toString(2),
+        octal: (n) => "0o" + Math.trunc(n).toString(8),
+        oct: (n) => "0o" + Math.trunc(n).toString(8),
+        decimal: (n) => String(Math.trunc(n)),
+        dec: (n) => String(Math.trunc(n)),
+      };
+
+      const baseFormatter = baseFormats[targetLower];
+      if (baseFormatter) {
+        const inner = evaluateNodeFull(node.value, context, options);
+        if (inner.value === null) throw new EvalError("Cannot convert empty value");
+        const formatted = baseFormatter(inner.value);
+        return { value: inner.value, unit: formatted };
+      }
+
+      // Unit conversion
       const inner = evaluateNodeFull(node.value, context, options);
       if (inner.value === null) {
         throw new EvalError("Cannot convert empty value");

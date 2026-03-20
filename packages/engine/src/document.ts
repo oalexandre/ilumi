@@ -8,6 +8,10 @@ import type { UnitRegistry } from "./units/registry.js";
 
 import type { LineResult } from "./index.js";
 
+function isBaseFormatted(unit: string): boolean {
+  return /^(0x[0-9A-Fa-f]+|0b[01]+|0o[0-7]+|-?\d+)$/.test(unit);
+}
+
 interface LineState {
   source: string;
   ast: ASTNode | null;
@@ -158,15 +162,20 @@ export class Document {
 
       try {
         const result = evaluateNodeFull(line.ast, this.context, evalOpts);
+        let formatted = "";
+        if (result.value !== null) {
+          if (result.unit && isBaseFormatted(result.unit)) {
+            formatted = result.unit;
+          } else if (result.unit) {
+            formatted = formatWithUnit(result.value, result.unit);
+          } else {
+            formatted = formatNumber(result.value);
+          }
+        }
         line.result = {
           line: i,
           value: result.value,
-          formatted:
-            result.value !== null
-              ? result.unit
-                ? formatWithUnit(result.value, result.unit)
-                : formatNumber(result.value)
-              : "",
+          formatted,
         };
         previousResults[i] = result.value;
       } catch (err) {

@@ -58,9 +58,17 @@ Expression
   = Conversion
 
 Conversion
-  = left:BitwiseOr __ ("in" / "to" / "as") __ unit:UnitName
-    { return { type: "conversion", value: left, targetUnit: unit }; }
+  = left:BitwiseOr __ ("in" / "to" / "as") __ target:ConversionTarget
+    { return { type: "conversion", value: left, targetUnit: target }; }
   / BitwiseOr
+
+ConversionTarget
+  = BaseKeyword / UnitName
+
+BaseKeyword
+  = kw:("hexadecimal" / "hex" / "binary" / "bin" / "octal" / "oct" / "decimal" / "dec")
+    !([a-zA-Z0-9_])
+    { return kw; }
 
 BitwiseOr
   = head:BitwiseXor tail:(__ ("OR") __ BitwiseXor)*
