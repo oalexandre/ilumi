@@ -21,6 +21,71 @@ Alternative way of installing using [Homebrew](https://brew.sh/): `brew install 
 
 Alfred extension can be [downloaded](https://cdn.numi.app/extensions/numi.alfredworkflow) directly, requires terminal version to work.
 
+## Development
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) >= 20
+- [pnpm](https://pnpm.io/) >= 9
+
+### Setup
+
+```bash
+git clone <repo-url>
+cd numi
+pnpm install
+```
+
+### Running in dev mode
+
+```bash
+pnpm dev
+```
+
+This starts Electron with hot-reload enabled — changes to the renderer (React) are reflected instantly, and changes to the main process trigger an automatic restart.
+
+### Running tests
+
+```bash
+# Run all tests once
+pnpm test
+
+# Run tests in watch mode (re-runs on file changes)
+pnpm test:watch
+```
+
+### Other useful commands
+
+```bash
+# Type-check all packages
+pnpm typecheck
+
+# Lint
+pnpm lint
+
+# Auto-fix lint issues
+pnpm lint:fix
+
+# Format code with Prettier
+pnpm format
+
+# Build for production
+pnpm build
+
+# Preview production build
+pnpm preview
+```
+
+### Project structure
+
+```
+packages/
+  engine/     # Parser, evaluator, units, plugins (pure TS, zero Electron deps)
+  app/        # Electron main process + preload
+  renderer/   # React UI (CodeMirror 6 + results pane)
+plugins/      # Community plugins (Numi-compatible)
+```
+
 ## Usage
 
 Terminal version can be used this way:
