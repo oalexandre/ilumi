@@ -1,6 +1,7 @@
 import type { ASTNode } from "./ast.js";
 import { EvalContext } from "./evaluator/context.js";
 import { evaluateNode } from "./evaluator/index.js";
+import { formatNumber } from "./formatter.js";
 import { parse } from "./parser/index.js";
 
 import type { LineResult } from "./index.js";
@@ -143,7 +144,7 @@ export class Document {
         line.result = {
           line: i,
           value,
-          formatted: value !== null ? String(value) : "",
+          formatted: value !== null ? formatNumber(value) : "",
         };
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unknown error";
