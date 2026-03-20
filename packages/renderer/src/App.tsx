@@ -1,17 +1,19 @@
 import { useState, useCallback } from "react";
-import type { LineResult } from "@engine/index";
 
 import { EditorPane } from "./components/editor-pane";
 import { ResultsPane } from "./components/results-pane";
+import { useEngine } from "./hooks/use-engine";
 
 export function App(): React.JSX.Element {
-  const [results, setResults] = useState<LineResult[]>([]);
+  const { results, evaluate } = useEngine();
   const [scrollTop, setScrollTop] = useState(0);
 
-  const handleChange = useCallback(async (text: string) => {
-    const evaluated = await window.numi.evaluate(text);
-    setResults(evaluated);
-  }, []);
+  const handleChange = useCallback(
+    (text: string) => {
+      evaluate(text);
+    },
+    [evaluate],
+  );
 
   const handleScroll = useCallback((top: number) => {
     setScrollTop(top);

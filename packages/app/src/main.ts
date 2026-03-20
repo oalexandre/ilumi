@@ -1,9 +1,10 @@
 import { join } from "node:path";
 
 import { app, BrowserWindow, ipcMain } from "electron";
-import { evaluate } from "@engine/index";
+import { Document } from "@engine/index";
 
 const isDev = !app.isPackaged;
+const doc = new Document();
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -20,8 +21,8 @@ function createWindow(): void {
     },
   });
 
-  ipcMain.handle("numi:evaluate", (_event, document: string) => {
-    return evaluate(document);
+  ipcMain.handle("numi:evaluate", (_event, source: string) => {
+    return doc.update(source);
   });
 
   if (isDev && process.env["ELECTRON_RENDERER_URL"]) {
