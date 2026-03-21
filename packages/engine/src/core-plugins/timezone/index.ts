@@ -527,6 +527,7 @@ function buildBaseConversions(): PluginManifest["baseConversions"] {
     const entry = {
       formatter: (n: number) => formatDateInTimezone(n, iana),
       detail: `timezone: ${iana}`,
+      category: "date" as const,
     };
     conversions[keyword] = entry;
     // Also register lowercase variant for case-insensitive matching

@@ -33,11 +33,11 @@ export function registerPlugin(registry: EntityRegistry, manifest: PluginManifes
   }
 
   if (manifest.baseConversions) {
-    for (const [name, { formatter, detail, aliases }] of Object.entries(manifest.baseConversions)) {
-      registry.registerBaseConversion(name, formatter, detail);
+    for (const [name, { formatter, detail, aliases, category }] of Object.entries(manifest.baseConversions)) {
+      registry.registerBaseConversion(name, formatter, detail, category);
       if (aliases) {
         for (const alias of aliases) {
-          registry.registerBaseConversion(alias, formatter, detail);
+          registry.registerBaseConversion(alias, formatter, detail, category);
         }
       }
     }

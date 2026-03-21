@@ -532,11 +532,22 @@ baseConversions: {
     formatter: (n) => "0x" + Math.trunc(n).toString(16).toUpperCase(),
     detail: "hexadecimal",
     aliases: ["hexadecimal"],
+    category: "numeric",  // only appears in autocomplete for numeric contexts
   },
 }
 ```
 
-Built-in conversions: `hex`, `binary`/`bin`, `octal`/`oct`, `decimal`/`dec`
+The optional `category` field controls when the conversion appears in autocomplete:
+
+| Category | Shown when |
+|----------|-----------|
+| `"numeric"` | Source is a plain number (`255 in ...`) |
+| `"date"` | Source is a date literal (`now in ...`, `today in ...`) |
+| *(omitted)* | Shown in all non-unit contexts (universal) |
+
+When the source is a known unit (e.g., `5 km in ...`), only compatible units are shown — categories are ignored.
+
+Built-in conversions: `hex`, `binary`/`bin`, `octal`/`oct`, `decimal`/`dec` (category: `"numeric"`)
 
 Usage: `255 in hex` → `0xFF`
 
@@ -605,6 +616,7 @@ interface PluginManifest {
     formatter: (n: number) => string;
     detail?: string;
     aliases?: string[];
+    category?: string;  // autocomplete context: "date", "numeric", or omit for universal
   }>;
   tests?: PluginTest[];
   help?: HelpSection[];

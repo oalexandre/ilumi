@@ -20,6 +20,7 @@ export class EntityRegistry {
   private dateLiteralDetails = new Map<string, string>();
   private baseConversions = new Map<string, (n: number) => string>();
   private baseConversionDetails = new Map<string, string>();
+  private baseConversionCategories = new Map<string, string>();
   private coreHelpSections: HelpSection[] = [];
   private communityHelpSections: HelpSection[] = [];
 
@@ -49,9 +50,10 @@ export class EntityRegistry {
     if (detail) this.dateLiteralDetails.set(name, detail);
   }
 
-  registerBaseConversion(name: string, formatter: (n: number) => string, detail?: string): void {
+  registerBaseConversion(name: string, formatter: (n: number) => string, detail?: string, category?: string): void {
     this.baseConversions.set(name, formatter);
     if (detail) this.baseConversionDetails.set(name, detail);
+    if (category) this.baseConversionCategories.set(name, category);
   }
 
   addUnit(definition: UnitDefinition): void {
@@ -129,6 +131,75 @@ export class EntityRegistry {
 
   getBaseFormatter(keyword: string): ((n: number) => string) | undefined {
     return this.baseConversions.get(keyword.toLowerCase());
+  }
+
+  /** Check if a keyword is a known date literal. */
+  isDateLiteral(keyword: string): boolean {
+    return this.dateLiterals.has(keyword.toLowerCase());
+  }
+
+  /**
+   * Get context-aware conversion targets for autocomplete.
+   *
+   * The logic uses the `category` field on base conversions to decide
+   * what to show. Categories allow plugins to declare when their
+   * conversions are relevant:
+   *
+   * - `"date"` → shown when source is a date literal (today, now, etc.)
+   * - `"numeric"` → shown when source is a plain number
+   * - no category → shown in all non-unit contexts (default)
+   *
+   * When the source is a known unit, only compatible units are shown
+   * (same baseUnitId). Categories are ignored in this case.
+   */
+  getConversionCompletions(sourceWord: string): EntityInfo[] {
+    const lower = sourceWord.toLowerCase();
+
+    // Determine the source context
+    const isDate = this.dateLiterals.has(lower);
+    const unitDef = this.unitRegistry.findByPhrase(lower);
+
+    // Known unit → only compatible units (no base conversions)
+    if (unitDef) {
+      const compatPhrases = this.unitRegistry.getCompatiblePhrases(lower);
+      return compatPhrases.map((p) => ({ name: p, type: "unit" as const }));
+    }
+
+    // Date literal or plain value → filter base conversions by category
+    const contextCategory = isDate ? "date" : "numeric";
+    const results: EntityInfo[] = [];
+    const seen = new Set<string>();
+
+    for (const [name] of this.baseConversions) {
+      const cat = this.baseConversionCategories.get(name);
+      // Show if: category matches context, or no category (universal)
+      if (cat === contextCategory || (!cat && !isDate)) {
+        const lowerName = name.toLowerCase();
+        if (!seen.has(lowerName)) {
+          seen.add(lowerName);
+          // Prefer original-case (UTC not utc)
+          if (name !== lowerName || !this.baseConversions.has(name.toUpperCase())) {
+            results.push({
+              name,
+              type: "baseConversion",
+              detail: this.baseConversionDetails.get(name),
+            });
+          }
+        }
+      }
+    }
+
+    // For non-date context, also include units
+    if (!isDate) {
+      const phrases = this.unitRegistry.getAllPhrases();
+      for (const p of phrases) {
+        if (p.length > 1 && results.length < 50) {
+          results.push({ name: p, type: "unit" as const });
+        }
+      }
+    }
+
+    return results;
   }
 
   // --- Unit delegation ---

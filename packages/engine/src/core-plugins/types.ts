@@ -36,7 +36,13 @@ export interface PluginManifest {
   dateLiterals?: Record<string, { resolver: () => Date; detail?: string }>;
   baseConversions?: Record<
     string,
-    { formatter: (n: number) => string; detail?: string; aliases?: string[] }
+    {
+      formatter: (n: number) => string;
+      detail?: string;
+      aliases?: string[];
+      /** Category for autocomplete filtering (e.g., "date", "numeric"). Omit for universal. */
+      category?: string;
+    }
   >;
   /** Self-test cases — evaluated by the test runner to validate the plugin works correctly */
   tests?: PluginTest[];

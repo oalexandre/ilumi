@@ -20,10 +20,10 @@ export const baseConversionPlugin: PluginManifest = {
     { description: "0xFF in dec = 255", input: "0xFF in dec", formatted: "255" },
   ],
   baseConversions: {
-    hex: { formatter: toHex, detail: "hexadecimal", aliases: ["hexadecimal"] },
-    binary: { formatter: toBin, detail: "binary", aliases: ["bin"] },
-    octal: { formatter: toOct, detail: "octal", aliases: ["oct"] },
-    decimal: { formatter: toDec, detail: "decimal", aliases: ["dec"] },
+    hex: { formatter: toHex, detail: "hexadecimal", aliases: ["hexadecimal"], category: "numeric" },
+    binary: { formatter: toBin, detail: "binary", aliases: ["bin"], category: "numeric" },
+    octal: { formatter: toOct, detail: "octal", aliases: ["oct"], category: "numeric" },
+    decimal: { formatter: toDec, detail: "decimal", aliases: ["dec"], category: "numeric" },
   },
   help: [{
     title: "Number Formats",

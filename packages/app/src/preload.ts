@@ -17,6 +17,9 @@ export const ilumiApi = {
   getHelpSections: (): Promise<{ core: HelpSection[]; community: HelpSection[] }> => {
     return ipcRenderer.invoke("numi:getHelpSections");
   },
+  getConversionCompletions: (sourceWord: string): Promise<EntityInfo[]> => {
+    return ipcRenderer.invoke("numi:getConversionCompletions", sourceWord);
+  },
   getTheme: (): Promise<"dark" | "light"> => {
     return ipcRenderer.invoke("numi:getTheme");
   },

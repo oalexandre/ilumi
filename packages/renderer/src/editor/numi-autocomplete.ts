@@ -14,17 +14,10 @@ interface CompletionEntry {
 let entityCompletions: CompletionEntry[] = [];
 let entityCompletionsLoaded = false;
 
-// Static base targets (always available)
-const BASE_TARGETS: CompletionEntry[] = [
-  { label: "hex", detail: "hexadecimal", type: "keyword" },
-  { label: "binary", detail: "binary", type: "keyword" },
-  { label: "octal", detail: "octal", type: "keyword" },
-  { label: "decimal", detail: "decimal", type: "keyword" },
-];
-
 // Cache for unit completions
 let allUnitsCache: string[] | null = null;
-const compatibleCache: Map<string, string[]> = new Map();
+// Cache for context-aware conversion completions
+const conversionCache: Map<string, CompletionEntry[]> = new Map();
 
 function mapEntityType(type: string): string {
   switch (type) {
@@ -57,7 +50,7 @@ async function loadEntityCompletions(): Promise<CompletionEntry[]> {
 export function invalidateEntityCache(): void {
   entityCompletionsLoaded = false;
   allUnitsCache = null;
-  compatibleCache.clear();
+  conversionCache.clear();
 }
 
 async function getAllUnits(): Promise<string[]> {
@@ -70,13 +63,19 @@ async function getAllUnits(): Promise<string[]> {
   }
 }
 
-async function getCompatible(unit: string): Promise<string[]> {
-  const cached = compatibleCache.get(unit.toLowerCase());
+async function getConversionTargets(sourceWord: string): Promise<CompletionEntry[]> {
+  const key = sourceWord.toLowerCase();
+  const cached = conversionCache.get(key);
   if (cached) return cached;
   try {
-    const result = await window.numi.getCompletions(unit);
-    compatibleCache.set(unit.toLowerCase(), result);
-    return result;
+    const results = await window.numi.getConversionCompletions(sourceWord);
+    const entries = results.map((e) => ({
+      label: e.name,
+      detail: e.detail,
+      type: e.type === "unit" ? "unit" : "keyword",
+    }));
+    conversionCache.set(key, entries);
+    return entries;
   } catch {
     return [];
   }
@@ -87,26 +86,23 @@ async function numiCompletions(context: CompletionContext): Promise<CompletionRe
   const line = context.state.doc.lineAt(context.pos);
   const textBefore = line.text.slice(0, context.pos - line.from);
 
-  // Check if we're after "in", "to", or "as" — offer compatible units
+  // Check if we're after "in", "to", or "as" — offer context-aware targets
   const conversionMatch = textBefore.match(
     /(\S+)\s+(?:in|to|as)\s+(\S*)$/i,
   );
   if (conversionMatch) {
-    const sourceUnit = conversionMatch[1] ?? "";
+    const sourceWord = conversionMatch[1] ?? "";
     const typed = conversionMatch[2] ?? "";
     const from = context.pos - typed.length;
 
-    // Get compatible units for the source
-    const compatible = await getCompatible(sourceUnit);
-    const baseOptions = BASE_TARGETS.filter((b) =>
-      b.label.startsWith(typed.toLowerCase()),
+    // Get context-aware completions based on the source word
+    const targets = await getConversionTargets(sourceWord);
+    const filter = typed.toLowerCase();
+
+    const options = targets.filter((t) =>
+      filter === "" || t.label.toLowerCase().startsWith(filter),
     );
 
-    const unitOptions = compatible
-      .filter((u) => u.toLowerCase().startsWith(typed.toLowerCase()))
-      .map((u) => ({ label: u, type: "unit" as const }));
-
-    const options = [...baseOptions, ...unitOptions];
     if (options.length === 0) return null;
 
     return { from, options, filter: false };
