@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-
 import { toPng } from "html-to-image";
 
 import logoSvg from "../../../assets/logo.svg";
@@ -25,8 +24,16 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 export function App(): React.JSX.Element {
   const { toggle } = useTheme();
   const { results, evaluate } = useEngine();
-  const { notes, activeNote, activeId, setActiveId, updateContent, createNote, closeNote, renameNote } =
-    useNotes();
+  const {
+    notes,
+    activeNote,
+    activeId,
+    setActiveId,
+    updateContent,
+    createNote,
+    closeNote,
+    renameNote,
+  } = useNotes();
   const [scrollTop, setScrollTop] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -60,10 +67,7 @@ export function App(): React.JSX.Element {
     const dataUrl = await toPng(node, { pixelRatio: pr });
 
     // Load captured image and logo in parallel
-    const [img, logo] = await Promise.all([
-      loadImage(dataUrl),
-      loadImage(logoSvg),
-    ]);
+    const [img, logo] = await Promise.all([loadImage(dataUrl), loadImage(logoSvg)]);
 
     // --- Card dimensions ---
     const pad = 32 * pr; // outer padding around content
@@ -151,13 +155,7 @@ export function App(): React.JSX.Element {
     const brandCenterY = lineY + accentH + (cy + cardH - (lineY + accentH)) / 2;
 
     // Logo
-    ctx.drawImage(
-      logo,
-      brandX,
-      brandCenterY - brandLogoSize / 2,
-      brandLogoSize,
-      brandLogoSize,
-    );
+    ctx.drawImage(logo, brandX, brandCenterY - brandLogoSize / 2, brandLogoSize, brandLogoSize);
 
     // "ilumi" text in gold gradient
     const textGrad = ctx.createLinearGradient(
@@ -180,18 +178,21 @@ export function App(): React.JSX.Element {
 
   // Menu keyboard shortcut handlers
   useEffect(() => {
-    window.numi.onNewNote(() => createNote());
-    window.numi.onCloseNote(() => {
-      if (notes.length > 1) closeNote(activeId);
-    });
-    window.numi.onToggleTheme(() => toggle());
-    window.numi.onCopyAllResults(() => {
-      const text = results
-        .filter((r) => r.formatted)
-        .map((r) => r.formatted)
-        .join("\n");
-      if (text) navigator.clipboard.writeText(text);
-    });
+    const cleanups = [
+      window.numi.onNewNote(() => createNote()),
+      window.numi.onCloseNote(() => {
+        if (notes.length > 1) closeNote(activeId);
+      }),
+      window.numi.onToggleTheme(() => toggle()),
+      window.numi.onCopyAllResults(() => {
+        const text = results
+          .filter((r) => r.formatted)
+          .map((r) => r.formatted)
+          .join("\n");
+        if (text) navigator.clipboard.writeText(text);
+      }),
+    ];
+    return () => cleanups.forEach((fn) => fn());
   }, [createNote, closeNote, activeId, notes.length, toggle, results]);
 
   // Cmd/Ctrl+, for settings

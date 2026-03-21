@@ -44,28 +44,34 @@ export const ilumiApi = {
   deleteNote: (id: string): Promise<void> => {
     return ipcRenderer.invoke("numi:deleteNote", id);
   },
-  onThemeChanged: (callback: (theme: "dark" | "light") => void): void => {
-    ipcRenderer.on("numi:themeChanged", (_event, theme: "dark" | "light") => {
-      callback(theme);
-    });
+  onThemeChanged: (callback: (theme: "dark" | "light") => void): (() => void) => {
+    const handler = (_event: unknown, theme: "dark" | "light") => callback(theme);
+    ipcRenderer.on("numi:themeChanged", handler);
+    return () => ipcRenderer.removeListener("numi:themeChanged", handler);
   },
-  onEntitiesChanged: (callback: () => void): void => {
+  onEntitiesChanged: (callback: () => void): (() => void) => {
     ipcRenderer.on("numi:entitiesChanged", callback);
+    return () => ipcRenderer.removeListener("numi:entitiesChanged", callback);
   },
-  onNewNote: (callback: () => void): void => {
+  onNewNote: (callback: () => void): (() => void) => {
     ipcRenderer.on("numi:newNote", callback);
+    return () => ipcRenderer.removeListener("numi:newNote", callback);
   },
-  onCloseNote: (callback: () => void): void => {
+  onCloseNote: (callback: () => void): (() => void) => {
     ipcRenderer.on("numi:closeNote", callback);
+    return () => ipcRenderer.removeListener("numi:closeNote", callback);
   },
-  onToggleTheme: (callback: () => void): void => {
+  onToggleTheme: (callback: () => void): (() => void) => {
     ipcRenderer.on("numi:toggleTheme", callback);
+    return () => ipcRenderer.removeListener("numi:toggleTheme", callback);
   },
-  onCopyCurrentResult: (callback: () => void): void => {
+  onCopyCurrentResult: (callback: () => void): (() => void) => {
     ipcRenderer.on("numi:copyCurrentResult", callback);
+    return () => ipcRenderer.removeListener("numi:copyCurrentResult", callback);
   },
-  onCopyAllResults: (callback: () => void): void => {
+  onCopyAllResults: (callback: () => void): (() => void) => {
     ipcRenderer.on("numi:copyAllResults", callback);
+    return () => ipcRenderer.removeListener("numi:copyAllResults", callback);
   },
 };
 

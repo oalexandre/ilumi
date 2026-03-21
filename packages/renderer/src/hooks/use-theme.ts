@@ -7,7 +7,8 @@ export function useTheme(): { theme: Theme; toggle: () => void } {
 
   useEffect(() => {
     window.numi.getTheme().then(setTheme);
-    window.numi.onThemeChanged(setTheme);
+    const cleanup = window.numi.onThemeChanged(setTheme);
+    return cleanup;
   }, []);
 
   useEffect(() => {

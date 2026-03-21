@@ -67,26 +67,32 @@ export function EditorPane({
     scroller.addEventListener("scroll", scrollHandler, { passive: true });
 
     // Load initial entity data for dynamic highlighting
-    window.numi.getEntityNames().then((entities) => {
-      updateLanguageSets(view, entities);
-    }).catch(() => {});
+    window.numi
+      .getEntityNames()
+      .then((entities) => {
+        updateLanguageSets(view, entities);
+      })
+      .catch(() => {});
 
     // Listen for entity changes (plugin reload, etc.)
-    window.numi.onEntitiesChanged(() => {
+    const cleanupEntities = window.numi.onEntitiesChanged(() => {
       invalidateEntityCache();
-      window.numi.getEntityNames().then((entities) => {
-        if (viewRef.current) {
-          updateLanguageSets(viewRef.current, entities);
-        }
-      }).catch(() => {});
+      window.numi
+        .getEntityNames()
+        .then((entities) => {
+          if (viewRef.current) {
+            updateLanguageSets(viewRef.current, entities);
+          }
+        })
+        .catch(() => {});
     });
 
     return () => {
+      cleanupEntities();
       scroller.removeEventListener("scroll", scrollHandler);
       view.destroy();
     };
     // Only run on mount (or when initialContent changes via key prop)
-
   }, [initialContent]);
 
   return (
