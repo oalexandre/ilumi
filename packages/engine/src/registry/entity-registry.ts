@@ -139,6 +139,24 @@ export class EntityRegistry {
   }
 
   /**
+   * Resolve the best source word from candidate tokens for autocomplete.
+   * Given tokens like ["square", "meter"], tries "square meter" first,
+   * then "meter" alone. Returns the recognized source word, or the last
+   * token as fallback.
+   */
+  resolveSourceWord(tokens: string[]): string {
+    // Try progressively shorter phrases, longest first
+    for (let start = 0; start < tokens.length; start++) {
+      const phrase = tokens.slice(start).join(" ");
+      const lower = phrase.toLowerCase();
+      if (this.dateLiterals.has(lower)) return phrase;
+      if (this.unitRegistry.findByPhrase(lower)) return phrase;
+    }
+    // Fallback: last token
+    return tokens[tokens.length - 1] ?? "";
+  }
+
+  /**
    * Get context-aware conversion targets for autocomplete.
    *
    * The logic uses the `category` field on base conversions to decide

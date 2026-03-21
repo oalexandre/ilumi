@@ -88,14 +88,21 @@ async function numiCompletions(context: CompletionContext): Promise<CompletionRe
 
   // Check if we're after "in", "to", or "as" — offer context-aware targets
   const conversionMatch = textBefore.match(
-    /(\S+)\s+(?:in|to|as)\s+(\S*)$/i,
+    /(.+?)\s+(?:in|to|as)\s+(\S*)$/i,
   );
   if (conversionMatch) {
-    const sourceWord = conversionMatch[1] ?? "";
+    const beforeKeyword = (conversionMatch[1] ?? "").trim();
     const typed = conversionMatch[2] ?? "";
     const from = context.pos - typed.length;
 
-    // Get context-aware completions based on the source word
+    // Extract word tokens before the conversion keyword (skip leading number)
+    const tokens = beforeKeyword.split(/\s+/).filter((t) => !/^\d/.test(t));
+    if (tokens.length === 0) return null;
+
+    // Resolve multi-word source (e.g., "square meter" from ["square", "meter"])
+    const sourceWord = await window.numi.resolveSourceWord(tokens);
+
+    // Get context-aware completions based on the resolved source
     const targets = await getConversionTargets(sourceWord);
     const filter = typed.toLowerCase();
 

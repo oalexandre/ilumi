@@ -20,6 +20,9 @@ export const ilumiApi = {
   getConversionCompletions: (sourceWord: string): Promise<EntityInfo[]> => {
     return ipcRenderer.invoke("numi:getConversionCompletions", sourceWord);
   },
+  resolveSourceWord: (tokens: string[]): Promise<string> => {
+    return ipcRenderer.invoke("numi:resolveSourceWord", tokens);
+  },
   getTheme: (): Promise<"dark" | "light"> => {
     return ipcRenderer.invoke("numi:getTheme");
   },

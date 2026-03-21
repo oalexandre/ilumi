@@ -78,6 +78,10 @@ function createWindow(): void {
     return entityRegistry.getConversionCompletions(sourceWord);
   });
 
+  ipcMain.handle("numi:resolveSourceWord", (_event, tokens: string[]) => {
+    return entityRegistry.resolveSourceWord(tokens);
+  });
+
   ipcMain.handle("numi:getTheme", () => {
     return getEffectiveTheme();
   });
