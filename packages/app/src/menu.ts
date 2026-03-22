@@ -1,5 +1,7 @@
 import { Menu, app, type BrowserWindow } from "electron";
 
+import { checkForUpdates } from "./updater.js";
+
 const isMac = process.platform === "darwin";
 
 export function createAppMenu(): void {
@@ -10,6 +12,10 @@ export function createAppMenu(): void {
             label: app.name,
             submenu: [
               { role: "about" as const },
+              {
+                label: "Check for Updates…",
+                click: () => checkForUpdates(),
+              },
               { type: "separator" as const },
               { role: "hide" as const },
               { role: "hideOthers" as const },

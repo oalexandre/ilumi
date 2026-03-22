@@ -1,12 +1,7 @@
 import { join, resolve } from "node:path";
 
 import { app, BrowserWindow, ipcMain, nativeTheme, nativeImage } from "electron";
-import {
-  Document,
-  createEntityRegistry,
-  PluginHost,
-  PluginLoader,
-} from "@engine/index";
+import { Document, createEntityRegistry, PluginHost, PluginLoader } from "@engine/index";
 import type { EntityInfo } from "@engine/index";
 
 import { loadAllNotes, saveNote, deleteNote, generateId } from "./notes.js";
@@ -14,6 +9,7 @@ import type { NoteData } from "./notes.js";
 import { createAppMenu } from "./menu.js";
 import { loadSettings, saveSetting } from "./settings.js";
 import { createTray } from "./tray.js";
+import { setupAutoUpdater } from "./updater.js";
 
 const isDev = !app.isPackaged;
 const entityRegistry = createEntityRegistry();
@@ -184,6 +180,7 @@ app.whenReady().then(() => {
   createAppMenu();
   createWindow();
   createTray(() => mainWindow);
+  setupAutoUpdater(() => mainWindow);
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
