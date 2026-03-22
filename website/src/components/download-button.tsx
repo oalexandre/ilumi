@@ -12,8 +12,10 @@ const platforms: { os: OS; label: string; file: string; detail: string }[] = [
   { os: "mac", label: "macOS Intel", file: "Ilumi-0.1.1-x64.dmg", detail: "Intel (.dmg)" },
   { os: "windows", label: "Windows", file: "Ilumi-Setup-0.1.1-x64.exe", detail: "64-bit (.exe)" },
   { os: "windows", label: "Windows ARM", file: "Ilumi-Setup-0.1.1-arm64.exe", detail: "ARM (.exe)" },
-  { os: "linux", label: "Linux", file: "Ilumi_0.1.1_amd64.deb", detail: "Debian/Ubuntu (.deb)" },
-  { os: "linux", label: "Linux AppImage", file: "Ilumi-0.1.1-x86_64.AppImage", detail: "Universal (.AppImage)" },
+  { os: "linux", label: "Linux", file: "Ilumi_0.1.1_amd64.deb", detail: "x64 (.deb)" },
+  { os: "linux", label: "Linux ARM", file: "Ilumi_0.1.1_arm64.deb", detail: "ARM64 (.deb)" },
+  { os: "linux", label: "Linux AppImage", file: "Ilumi-0.1.1-x86_64.AppImage", detail: "x64 (.AppImage)" },
+  { os: "linux", label: "Linux AppImage ARM", file: "Ilumi-0.1.1-arm64.AppImage", detail: "ARM64 (.AppImage)" },
 ];
 
 const primaryByOS: Record<OS, string> = {
