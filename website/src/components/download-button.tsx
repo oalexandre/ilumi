@@ -4,22 +4,22 @@ import { useEffect, useState, useRef } from "react";
 
 type OS = "mac" | "windows" | "linux" | "unknown";
 
-const BASE = "https://github.com/oalexandre/ilumi/releases/download/v0.1.0";
+const BASE = "https://github.com/oalexandre/ilumi/releases/download/v0.1.1";
 const RELEASES = "https://github.com/oalexandre/ilumi/releases";
 
 const platforms: { os: OS; label: string; file: string; detail: string }[] = [
-  { os: "mac", label: "macOS", file: "Ilumi-0.1.0-arm64.dmg", detail: "Apple Silicon (.dmg)" },
-  { os: "mac", label: "macOS Intel", file: "Ilumi-0.1.0-x64.dmg", detail: "Intel (.dmg)" },
-  { os: "windows", label: "Windows", file: "Ilumi-Setup-0.1.0-x64.exe", detail: "64-bit (.exe)" },
-  { os: "windows", label: "Windows ARM", file: "Ilumi-Setup-0.1.0-arm64.exe", detail: "ARM (.exe)" },
-  { os: "linux", label: "Linux", file: "Ilumi_0.1.0_amd64.deb", detail: "Debian/Ubuntu (.deb)" },
-  { os: "linux", label: "Linux AppImage", file: "Ilumi-0.1.0-x86_64.AppImage", detail: "Universal (.AppImage)" },
+  { os: "mac", label: "macOS", file: "Ilumi-0.1.1-arm64.dmg", detail: "Apple Silicon (.dmg)" },
+  { os: "mac", label: "macOS Intel", file: "Ilumi-0.1.1-x64.dmg", detail: "Intel (.dmg)" },
+  { os: "windows", label: "Windows", file: "Ilumi-Setup-0.1.1-x64.exe", detail: "64-bit (.exe)" },
+  { os: "windows", label: "Windows ARM", file: "Ilumi-Setup-0.1.1-arm64.exe", detail: "ARM (.exe)" },
+  { os: "linux", label: "Linux", file: "Ilumi_0.1.1_amd64.deb", detail: "Debian/Ubuntu (.deb)" },
+  { os: "linux", label: "Linux AppImage", file: "Ilumi-0.1.1-x86_64.AppImage", detail: "Universal (.AppImage)" },
 ];
 
 const primaryByOS: Record<OS, string> = {
-  mac: "Ilumi-0.1.0-arm64.dmg",
-  windows: "Ilumi-Setup-0.1.0-x64.exe",
-  linux: "Ilumi_0.1.0_amd64.deb",
+  mac: "Ilumi-0.1.1-arm64.dmg",
+  windows: "Ilumi-Setup-0.1.1-x64.exe",
+  linux: "Ilumi_0.1.1_amd64.deb",
   unknown: "",
 };
 
@@ -112,7 +112,7 @@ export function DownloadButton() {
       </a>
 
       <div className="dl-meta">
-        v0.1.0 · <a href={RELEASES}>All platforms</a>
+        v0.1.1 · <a href={RELEASES}>All platforms</a>
       </div>
 
       {mounted && os === "mac" && (
