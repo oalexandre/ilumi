@@ -21,6 +21,7 @@
     "test:watch": "vitest",
     "typecheck": "pnpm -r run typecheck",
     "test:e2e": "pnpm build && npx playwright test",
+    "demo:gif": "pnpm build && npx tsx e2e/demo.ts",
     "dist": "pnpm build && electron-builder",
     "dist:mac": "pnpm build && electron-builder --mac",
     "dist:win": "pnpm build && electron-builder --win",

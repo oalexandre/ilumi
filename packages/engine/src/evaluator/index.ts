@@ -227,6 +227,16 @@ function evaluateBinary(
   const leftResult = evaluateNodeFull(left, context, options);
   const rightResult = evaluateNodeFull(right, context, options);
 
+  // Special case: value + percentVariable (e.g., price + tax where tax = 10%)
+  if ((op === "+" || op === "-") && rightResult.isPercent) {
+    if (leftResult.value === null || rightResult.value === null) {
+      throw new EvalError("Cannot perform operation on empty value");
+    }
+    const l = leftResult.value;
+    const pct = rightResult.value;
+    return { value: op === "+" ? l * (1 + pct) : l * (1 - pct) };
+  }
+
   if (leftResult.value === null || rightResult.value === null) {
     throw new EvalError("Cannot perform operation on empty value");
   }

@@ -71,6 +71,18 @@ describe("line references", () => {
     });
   });
 
+  describe("percentage variables in arithmetic", () => {
+    it("should apply percent variable: price + tax where tax=10%", () => {
+      const results = evaluate("price = 310\ntax = 10%\nfinal = price + tax");
+      expect(results[2]?.value).toBeCloseTo(341);
+    });
+
+    it("should subtract percent variable: price - discount where discount=20%", () => {
+      const results = evaluate("price = 100\ndiscount = 20%\nfinal = price - discount");
+      expect(results[2]?.value).toBeCloseTo(80);
+    });
+  });
+
   describe("sum with percentages", () => {
     it("should apply percentage to running total: Price=10, Free=20%, sum=12", () => {
       const results = evaluate("Price = 10\nFree = 20%\nsum");
