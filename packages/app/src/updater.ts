@@ -43,13 +43,13 @@ export function setupAutoUpdater(getWindow: () => BrowserWindow | null): void {
   });
 
   // Check on startup (with small delay to not block launch)
-  setTimeout(() => autoUpdater.checkForUpdates(), 5000);
+  setTimeout(() => autoUpdater.checkForUpdates().catch(() => {}), 5000);
 
   // Check periodically
-  setInterval(() => autoUpdater.checkForUpdates(), UPDATE_CHECK_INTERVAL);
+  setInterval(() => autoUpdater.checkForUpdates().catch(() => {}), UPDATE_CHECK_INTERVAL);
 }
 
 /** Manually trigger an update check (for menu item) */
 export function checkForUpdates(): void {
-  autoUpdater.checkForUpdates();
+  autoUpdater.checkForUpdates().catch(() => {});
 }

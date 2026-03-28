@@ -9,6 +9,7 @@ export default defineConfig({
     plugins: [externalizeDepsPlugin()],
     build: {
       outDir: "out/main",
+      minify: "esbuild",
       lib: {
         entry: resolve(__dirname, "packages/app/src/main.ts"),
       },
@@ -32,6 +33,7 @@ export default defineConfig({
     root: resolve(__dirname, "packages/renderer"),
     build: {
       outDir: resolve(__dirname, "out/renderer"),
+      minify: "esbuild",
       rollupOptions: {
         input: resolve(__dirname, "packages/renderer/index.html"),
       },

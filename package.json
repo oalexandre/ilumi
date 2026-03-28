@@ -11,7 +11,7 @@
   "main": "./out/main/main.js",
   "scripts": {
     "dev": "electron-vite dev",
-    "build": "electron-vite build",
+    "build": "peggy --format es -o packages/engine/src/parser/arithmetic-parser.js packages/engine/src/parser/arithmetic.pegjs && electron-vite build",
     "preview": "electron-vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
