@@ -4,24 +4,24 @@ import { useEffect, useState, useRef } from "react";
 
 type OS = "mac" | "windows" | "linux" | "unknown";
 
-const BASE = "https://github.com/oalexandre/ilumi/releases/download/v0.1.3";
+const BASE = "https://github.com/oalexandre/ilumi/releases/download/v0.2.0";
 const RELEASES = "https://github.com/oalexandre/ilumi/releases";
 
 const platforms: { os: OS; label: string; file: string; detail: string }[] = [
-  { os: "mac", label: "macOS", file: "Ilumi-0.1.3-arm64.dmg", detail: "Apple Silicon (.dmg)" },
-  { os: "mac", label: "macOS Intel", file: "Ilumi-0.1.3-x64.dmg", detail: "Intel (.dmg)" },
-  { os: "windows", label: "Windows", file: "Ilumi-Setup-0.1.3-x64.exe", detail: "64-bit (.exe)" },
-  { os: "windows", label: "Windows ARM", file: "Ilumi-Setup-0.1.3-arm64.exe", detail: "ARM (.exe)" },
-  { os: "linux", label: "Linux", file: "Ilumi_0.1.3_amd64.deb", detail: "x64 (.deb)" },
-  { os: "linux", label: "Linux ARM", file: "Ilumi_0.1.3_arm64.deb", detail: "ARM64 (.deb)" },
-  { os: "linux", label: "Linux AppImage", file: "Ilumi-0.1.3-x86_64.AppImage", detail: "x64 (.AppImage)" },
-  { os: "linux", label: "Linux AppImage ARM", file: "Ilumi-0.1.3-arm64.AppImage", detail: "ARM64 (.AppImage)" },
+  { os: "mac", label: "macOS", file: "Ilumi-0.2.0-arm64.dmg", detail: "Apple Silicon (.dmg)" },
+  { os: "mac", label: "macOS Intel", file: "Ilumi-0.2.0-x64.dmg", detail: "Intel (.dmg)" },
+  { os: "windows", label: "Windows", file: "Ilumi-Setup-0.2.0-x64.exe", detail: "64-bit (.exe)" },
+  { os: "windows", label: "Windows ARM", file: "Ilumi-Setup-0.2.0-arm64.exe", detail: "ARM (.exe)" },
+  { os: "linux", label: "Linux", file: "Ilumi_0.2.0_amd64.deb", detail: "x64 (.deb)" },
+  { os: "linux", label: "Linux ARM", file: "Ilumi_0.2.0_arm64.deb", detail: "ARM64 (.deb)" },
+  { os: "linux", label: "Linux AppImage", file: "Ilumi-0.2.0-x86_64.AppImage", detail: "x64 (.AppImage)" },
+  { os: "linux", label: "Linux AppImage ARM", file: "Ilumi-0.2.0-arm64.AppImage", detail: "ARM64 (.AppImage)" },
 ];
 
 const primaryByOS: Record<OS, string> = {
-  mac: "Ilumi-0.1.3-arm64.dmg",
-  windows: "Ilumi-Setup-0.1.3-x64.exe",
-  linux: "Ilumi_0.1.3_amd64.deb",
+  mac: "Ilumi-0.2.0-arm64.dmg",
+  windows: "Ilumi-Setup-0.2.0-x64.exe",
+  linux: "Ilumi_0.2.0_amd64.deb",
   unknown: "",
 };
 
@@ -114,7 +114,7 @@ export function DownloadButton() {
       </a>
 
       <div className="dl-meta">
-        v0.1.3 · <a href={RELEASES}>All platforms</a>
+        v0.2.0 · <a href={RELEASES}>All platforms</a>
       </div>
 
       {mounted && os === "mac" && (
