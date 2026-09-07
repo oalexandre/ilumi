@@ -50,7 +50,7 @@ O autocomplete cobre unidades, funções e constantes, mas não as variáveis qu
 usuário definiu nas linhas acima. É onde a pessoa mais erra o nome. As variáveis
 definidas acima da linha atual passam a aparecer no topo da lista.
 
-## Sugeridas (roadmap futuro)
+## Sugeridas: produto
 
 ### 💡 Clicar no resultado insere referência
 
@@ -106,10 +106,77 @@ documento de 50 linhas e ~8,6 ms para 1000 linhas; o debounce de 50 ms e o IPC
 custam mais que o cálculo. Só faria sentido junto com uma troca do Electron por
 Tauri para reduzir o tamanho do binário, o que é um projeto bem maior.
 
-## Manutenção
+## Distribuição e adoção
+
+### 💡 Assinatura e notarização no macOS
+
+O app não é assinado, tanto que o site ensina a rodar `xattr -cr` para contornar
+o Gatekeeper. Isso afasta usuário comum. Um certificado de Apple Developer custa
+99 dólares por ano e o electron-builder já suporta notarização via variáveis de
+ambiente no workflow de release. No Windows, o SmartScreen tem o mesmo efeito;
+um certificado tradicional é mais caro, mas o Azure Trusted Signing é uma
+alternativa barata. É a mudança de maior impacto para adoção.
+
+### 💡 Homebrew e winget
+
+Um cask no Homebrew e um manifesto no winget deixam o app instalável com um
+comando e atualizável pelo gerenciador. É mais documentação e automação do que
+código; pode ser gerado a partir dos artefatos da release.
+
+### 💡 Nota de boas-vindas
+
+No primeiro uso, a nota inicial é vazia. Uma nota com exemplos prontos de
+variáveis, unidades, datas e porcentagem ensina o produto sem manual.
+
+## Experiência de uso
+
+### 💡 Quebra de linha com alinhamento
+
+O editor não faz wrap e o painel de resultados alinha por altura fixa (mesmo
+`line-height` e padding nos dois lados). Uma linha longa some para a direita.
+Ativar wrap exige medir a altura de cada linha do CodeMirror e aplicar ao
+resultado correspondente. É a mudança de layout mais importante pendente.
+
+### 💡 Copiar resultado no hover
+
+`Cmd+Shift+C` existe no menu, mas pouca gente descobre. Um ícone de copiar no
+hover de cada resultado torna a ação visível.
+
+### 💡 Cotações de moeda visíveis
+
+O fetcher tem cache e fallback, mas o usuário não sabe se a cotação é de agora
+ou de uma tabela fixa. Um indicador de "cotações de X horas atrás" no rodapé,
+com clique para atualizar, dá confiança no número.
+
+### 💡 Interface em português
+
+O público é brasileiro e todos os textos da UI são em inglês. Diferente das
+palavras-chave em português no engine: aqui é só menu, configurações, ajuda e
+mensagens de erro.
+
+## Qualidade e manutenção
+
+### 💡 E2E no CI
+
+O workflow de CI roda lint, typecheck e testes unitários, mas não os testes e2e.
+Como rodam em Electron, precisam de `xvfb-run` no Ubuntu. Evita regressão de UI
+em cada PR.
+
+### 💡 Testes de componente do renderer
+
+Não existe nenhum. Vitest com jsdom e Testing Library cobriria o painel de
+resultados e o de configurações sem subir o Electron.
+
+### Pendências menores
 
 - `pnpm build` regenera `arithmetic-parser.js` com formatação diferente da
   commitada. Vale fixar a versão do Peggy ou rodar o Prettier no arquivo gerado
   como parte do build.
 - Há 28 arquivos fora do padrão do Prettier no repositório. Um `pnpm format`
   único resolve, de preferência num commit isolado.
+
+## Ordem sugerida
+
+Por impacto para o usuário final: assinatura no macOS, nota de boas-vindas,
+quebra de linha com alinhamento. Depois, seções e subtotais e o autocomplete já
+cobrem a maior parte do que falta no dia a dia.
