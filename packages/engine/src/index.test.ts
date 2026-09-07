@@ -91,4 +91,19 @@ describe("Document", () => {
     const results = doc.update("1 +");
     expect(results[0]?.error).toBe("Syntax error");
   });
+
+  it("should tag parse failures as syntax errors and runtime failures as eval errors", () => {
+    expect(evaluate("a=")[0]?.errorKind).toBe("syntax");
+    expect(evaluate("1/0")[0]?.errorKind).toBe("eval");
+    expect(evaluate("foo + 1")[0]?.errorKind).toBe("eval");
+    expect(evaluate("1 + 1")[0]?.errorKind).toBeUndefined();
+  });
+
+  it("applies format options set on the document", () => {
+    const doc = new Document();
+    doc.setFormatOptions({ locale: "pt-BR", maxDecimals: 2 });
+    expect(doc.update("1234.5678")[0]?.formatted).toBe("1.234,57");
+    doc.setFormatOptions({});
+    expect(doc.update("1234.5678")[0]?.formatted).toBe("1,234.5678");
+  });
 });

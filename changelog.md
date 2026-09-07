@@ -1,200 +1,70 @@
-## Ilumi 3.32
+# Changelog
 
-**Apr 04, 2023**
-<br>
+All notable changes to Ilumi are documented here. The format follows
+[Keep a Changelog](https://keepachangelog.com/) and the project uses
+[Semantic Versioning](https://semver.org/).
 
-- Minor UI tweaks & optimizations
-- Menu shortcuts for new note, notes list
-- Framework updates
-  <br><br>
+## Unreleased
 
-## Ilumi 3.31
+### Added
 
-**Dec 07, 2022**
-<br>
+- Global keyboard shortcut (default `Cmd/Ctrl+Alt+Space`) to show or hide the window from any app, configurable in Settings.
+- "Always on top" option to keep the window floating above other apps.
+- Number format settings: thousands/decimal separators (`1,234.56`, `1.234,56`, `1 234,56`), maximum decimal places and thousands grouping.
+- Settings button in the bottom-right corner of the window.
+- Autocomplete now suggests variables defined earlier in the document.
+- `ILUMI_USER_DATA` environment variable to run the app against an isolated data directory (used by the e2e tests).
+- Roadmap document with suggested future features (`docs/roadmap.md`).
 
-- Fix crash (Ventura)
-- Fix window focus in Mission Control (Ventura)
-  <br><br>
+### Changed
 
-## Ilumi 3.30
+- While a line is being typed, an error on that line is shown as a pulsing "…" instead of "Syntax error".
+- Pressing Enter on a line with a syntax error reveals the error and keeps the cursor on the line. A second Enter creates the new line anyway. Evaluation errors (division by zero, undefined variable) are shown but do not block.
+- Leaving a line with the arrow keys, the mouse or by losing focus reveals its error.
+- `LineResult` now carries an `errorKind` (`syntax` or `eval`).
+- Settings panel shows the real app version.
 
-**May 14, 2022**
-<br>
+## 0.1.3 — 2026-03-29
 
-- Fixes PST timezone bug
-- Slight icons adjustments
-- Disable engine cache via user defaults
-- Improved extension logs
-- macOS 12 fixes
-- SetApp 1.6.3
-  <br><br>
+### Fixed
 
-## Ilumi 3.29
+- Auto-updater now works: release artifacts are published with the update metadata.
 
-**Nov 21, 2020**
-<br>
+## 0.1.2 — 2026-03-28
 
-- macOS 11 adjustments
-- Arm64 support
-- Alfred integration fixes
+### Changed
 
-<br><br>
+- PEG grammar is pre-compiled at build time and the bundle is minified, for faster startup.
 
-## Ilumi 3.28
+### Fixed
 
-**May 25, 2020**
-<br>
-Add Sentry framework
-<br><br>
+- Auto-updater packaging.
 
-## Ilumi 3.27
+## 0.1.1 — 2026-03-22
 
-**May 16, 2020**
-<br>
-Fix today widget
-<br><br>
+### Added
 
-## Ilumi 3.26
+- Landing page at [ilumi.oalexandre.com.br](https://ilumi.oalexandre.com.br) with download links for macOS, Windows and Linux (x64 and ARM).
+- Note about the macOS Gatekeeper workaround on the download page.
 
-**May 07, 2020**
-<br>
+### Fixed
 
-- New time zone service
-  <br><br>
+- ESM/CJS interop error when loading `electron-updater`.
 
-## Ilumi 3.25
+## 0.1.0 — 2026-03-21
 
-**Apr 18, 2020**
-<br>
+First public release.
 
-- Paddle framework Update
-- Frameworks cleanup
-  <br><br>
+### Added
 
-## Ilumi 3.24
-
-**Mar 07, 2020**
-<br>
-
-- Localization updates & fixes
-- Remove update notifications
-  <br><br>
-
-## Ilumi 3.23
-
-**Dec 28, 2019**
-<br>
-
-- Crash fixes
-  <br><br>
-
-## Ilumi 3.22.1
-
-**Dec 02, 2019**
-<br>
-
-- Skip document load on app crash
-  <br><br>
-
-## Ilumi 3.22
-
-**Nov 16, 2019**
-<br>
-
-- Fixed UI to use system font
-- Enable cryptocurrencies for everyone
-- New note requires activation
-  <br><br>
-
-## Ilumi 3.21.1
-
-**Nov 15, 2019**
-<br>
-
-- Fix crash on Mojave for some text sequences
-- Update Paddle library (v. 4.0.14)
-  <br><br>
-
-## Ilumi 3.20.5
-
-**Nov 03, 2019**
-<br>
-
-- Fix macOS Catalina crash
-  <br><br>
-
-## Ilumi 3.20.4
-
-**Aug 12, 2019**
-<br>
-
-- Minor services tweaks
-- Time zone fixes
-  <br><br>
-
-## Ilumi 3.20.3
-
-**May 10, 2019**
-<br>
-Fix precision settings
-<br><br>
-
-## Ilumi 3.20.2
-
-**May 05, 2019**
-<br>
-Tiny internal fixes
-<br><br>
-
-## Ilumi 3.20.1
-
-**Apr 28, 2019**
-<br>
-
-- Small internal fixes
-- Updated appcast url
-  <br><br>
-
-## Ilumi 3.20
-
-**Dec 27, 2018**
-<br>
-
-- Extended cryptocurrency support
-- Fixed timezone service
-- Fixed silent updater
-  <br><br>
-
-## Ilumi 3.19.1
-
-**Nov 26, 2018**
-<br>
-Fix today widget look in Mojave
-<br><br>
-
-## Ilumi 3.19
-
-**Oct 06, 2018**
-<br>
-
-- MacOS Mojave support
-- Remove "Let's Move"
-  <br><br>
-
-## Ilumi 3.18
-
-**Jan 02, 2018**
-<br>
-
-- Currency rates updated each hour
-- Engine performance improvements
-- Degrees by default for most trigonometrical functions
-- Fixed currency cache issues
-- Fixed hex numbers detection
-- Fixed menu commands availability
-- Fixed percentage addition/subtraction
-- Fixed Ln
-- Crash fixes
-- Various UI fixes
-  <br><br>
+- Notepad-style calculator with natural expressions, variables and line references (`sum`, `avg`, `prev`, `count`).
+- Unit conversions (length, weight, volume, area, temperature, data, CSS units, duration) and currency conversion with live rates.
+- Percentages, math functions and constants, base conversion (hex, binary, octal) and bitwise operators.
+- Date arithmetic and timezone conversion with the full IANA database.
+- Syntax highlighting and context-aware autocomplete (`Ctrl+Space` for the full catalog).
+- Multiple notes with tabs and auto-save.
+- Plugin system compatible with Numi community plugins, with plugin self-tests and a dynamic help panel.
+- Dark and light themes following the system preference, with manual toggle.
+- Share the current note as a branded PNG card.
+- System tray icon, close-to-tray behaviour and auto-update via `electron-updater`.
+- Installers for macOS (DMG), Windows (NSIS) and Linux (AppImage, deb).

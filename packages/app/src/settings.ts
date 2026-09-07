@@ -3,8 +3,34 @@ import { join, dirname } from "node:path";
 
 import { app } from "electron";
 
+/** Locales offered for number formatting, keyed by the sample the user sees. */
+export type NumberFormat = "en-US" | "pt-BR" | "fr-FR";
+
 export interface AppSettings {
   theme?: "auto" | "dark" | "light";
+  /** Electron accelerator that shows/hides the window from any app. Empty string disables it. */
+  globalShortcut?: string;
+  alwaysOnTop?: boolean;
+  numberFormat?: NumberFormat;
+  /** Maximum decimal places, or "auto" to show as many as the value needs. */
+  maxDecimals?: number | "auto";
+  useGrouping?: boolean;
+}
+
+export const DEFAULT_GLOBAL_SHORTCUT = "CommandOrControl+Alt+Space";
+
+export const DEFAULT_SETTINGS: Required<AppSettings> = {
+  theme: "auto",
+  globalShortcut: DEFAULT_GLOBAL_SHORTCUT,
+  alwaysOnTop: false,
+  numberFormat: "en-US",
+  maxDecimals: "auto",
+  useGrouping: true,
+};
+
+/** Settings with defaults filled in, as shown in the UI. */
+export function getEffectiveSettings(): Required<AppSettings> {
+  return { ...DEFAULT_SETTINGS, ...loadSettings() };
 }
 
 function getSettingsPath(): string {

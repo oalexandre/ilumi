@@ -52,3 +52,24 @@ describe("formatWithUnit", () => {
     expect(formatWithUnit(1500, "m")).toBe("1,500 m");
   });
 });
+
+describe("formatNumber options", () => {
+  it("uses the locale separators", () => {
+    expect(formatNumber(1234.56, { locale: "pt-BR" })).toBe("1.234,56");
+    expect(formatNumber(1234.56, { locale: "fr-FR" })).toBe("1\u202f234,56");
+  });
+
+  it("caps decimals at maxDecimals without padding", () => {
+    expect(formatNumber(3.14159, { maxDecimals: 2 })).toBe("3.14");
+    expect(formatNumber(2.5, { maxDecimals: 2 })).toBe("2.5");
+    expect(formatNumber(1 / 3, { maxDecimals: 0 })).toBe("0");
+  });
+
+  it("can disable thousands grouping", () => {
+    expect(formatNumber(1234567, { useGrouping: false })).toBe("1234567");
+  });
+
+  it("passes options through formatWithUnit", () => {
+    expect(formatWithUnit(1234.5, "km", { locale: "pt-BR" })).toBe("1.234,5 km");
+  });
+});

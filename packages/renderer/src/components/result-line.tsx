@@ -3,9 +3,17 @@ import type { LineResult } from "@engine/index";
 
 interface ResultLineProps {
   result: LineResult;
+  /** The line is still being typed: show a pending indicator instead of its error. */
+  pending?: boolean;
+  /** The error was just revealed by a blocked Enter: animate it in. */
+  revealed?: boolean;
 }
 
-export function ResultLine({ result }: ResultLineProps): React.JSX.Element {
+export function ResultLine({
+  result,
+  pending = false,
+  revealed = false,
+}: ResultLineProps): React.JSX.Element {
   const [copied, setCopied] = useState(false);
 
   const handleClick = useCallback(() => {
@@ -110,12 +118,23 @@ export function ResultLine({ result }: ResultLineProps): React.JSX.Element {
           Copied!
         </span>
       )}
-      {result.error ? (
-        <span style={{ color: "var(--text-error)", fontSize: "12px", opacity: 0.7 }}>
+      {result.error && pending ? (
+        <span className="result-pending" data-testid="result-pending" aria-label="pending">
+          <i />
+          <i />
+          <i />
+        </span>
+      ) : result.error ? (
+        <span
+          data-testid="result-error"
+          className={revealed ? "result-error-reveal" : undefined}
+          style={{ color: "var(--text-error)", fontSize: "12px", opacity: 0.7 }}
+        >
           {result.error}
         </span>
       ) : (
         <span
+          data-testid="result-value"
           style={{
             color: "var(--text-result)",
             transition: "opacity 0.15s",

@@ -4,6 +4,7 @@ export type { ParseOptions } from "./parser/index.js";
 export { evaluateNode, EvalContext, EvalError } from "./evaluator/index.js";
 export { Document } from "./document.js";
 export { formatNumber, formatWithUnit } from "./formatter.js";
+export type { FormatOptions } from "./formatter.js";
 export { UnitRegistry } from "./units/index.js";
 export type { UnitDefinition } from "./units/index.js";
 export { PluginHost, PluginLoader } from "./plugins/index.js";
@@ -28,6 +29,8 @@ export interface LineResult {
   value: number | null;
   formatted: string;
   error?: string;
+  /** "syntax" when the line failed to parse, "eval" when it parsed but failed to evaluate. */
+  errorKind?: "syntax" | "eval";
 }
 
 import { Document } from "./document.js";

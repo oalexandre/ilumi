@@ -23,7 +23,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 
 export function App(): React.JSX.Element {
   const { toggle } = useTheme();
-  const { results, evaluate } = useEngine();
+  const { results, evaluate, evaluateNow } = useEngine();
   const {
     notes,
     activeNote,
@@ -39,6 +39,13 @@ export function App(): React.JSX.Element {
   const [showHelp, setShowHelp] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  // Line the user is currently typing on (its errors are shown as a pending "…"),
+  // and the line whose error was revealed by a blocked Enter.
+  const [editingLine, setEditingLine] = useState<number | null>(null);
+  const [revealedLine, setRevealedLine] = useState<number | null>(null);
+  const revealedLineRef = useRef<number | null>(null);
+  revealedLineRef.current = revealedLine;
+
   // Capture initial content only when switching notes — not on every keystroke
   const initialContentRef = useRef(activeNote?.content ?? "");
   const prevActiveIdRef = useRef(activeId);
@@ -47,12 +54,50 @@ export function App(): React.JSX.Element {
     prevActiveIdRef.current = activeId;
   }
 
+  useEffect(() => {
+    setEditingLine(null);
+    setRevealedLine(null);
+  }, [activeId]);
+
   const handleChange = useCallback(
     (text: string) => {
       updateContent(text);
       evaluate(text);
     },
     [updateContent, evaluate],
+  );
+
+  // Number format lives in the main process: re-evaluate the note when settings change.
+  const activeContentRef = useRef(activeNote?.content ?? "");
+  activeContentRef.current = activeNote?.content ?? "";
+  useEffect(() => {
+    return window.numi.onSettingsChanged(() => {
+      void evaluateNow(activeContentRef.current);
+    });
+  }, [evaluateNow]);
+
+  const handleEditingLine = useCallback((line: number | null) => {
+    setEditingLine(line);
+    // Typing again hides the revealed error until the next Enter.
+    if (line !== null) setRevealedLine(null);
+  }, []);
+
+  const handleEnter = useCallback(
+    async (line: number, text: string): Promise<boolean> => {
+      const evaluated = await evaluateNow(text);
+      const result = evaluated[line];
+      const isSyntaxError = result?.errorKind === "syntax";
+      // Block the first Enter on a syntax error and reveal it; a second Enter goes through.
+      if (isSyntaxError && revealedLineRef.current !== line) {
+        setRevealedLine(line);
+        setEditingLine(null);
+        return true;
+      }
+      // Moving to a new line means the previous one is no longer being edited.
+      setEditingLine(null);
+      return false;
+    },
+    [evaluateNow],
   );
 
   const handleScroll = useCallback((top: number) => {
@@ -220,8 +265,15 @@ export function App(): React.JSX.Element {
           initialContent={initialContentRef.current}
           onChange={handleChange}
           onScroll={handleScroll}
+          onEditingLine={handleEditingLine}
+          onEnter={handleEnter}
         />
-        <ResultsPane results={results} scrollTop={scrollTop} />
+        <ResultsPane
+          results={results}
+          scrollTop={scrollTop}
+          editingLine={editingLine}
+          revealedLine={revealedLine}
+        />
       </div>
       <TabBar
         notes={notes}
@@ -232,6 +284,7 @@ export function App(): React.JSX.Element {
         onRename={renameNote}
         onShare={handleShare}
         onHelp={() => setShowHelp(true)}
+        onSettings={() => setShowSettings(true)}
       />
       <SettingsPanel visible={showSettings} onClose={() => setShowSettings(false)} />
       <HelpPanel visible={showHelp} onClose={() => setShowHelp(false)} />

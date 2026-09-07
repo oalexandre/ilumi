@@ -1,6 +1,8 @@
 import { contextBridge, ipcRenderer } from "electron";
 import type { LineResult, EntityInfo, HelpSection } from "@engine/index";
 
+import type { AppSettings } from "./settings.js";
+
 export const ilumiApi = {
   evaluate: (document: string): Promise<LineResult[]> => {
     return ipcRenderer.invoke("numi:evaluate", document);
@@ -31,6 +33,20 @@ export const ilumiApi = {
   },
   toggleTheme: (): Promise<"dark" | "light"> => {
     return ipcRenderer.invoke("numi:toggleTheme");
+  },
+  getSettings: (): Promise<Required<AppSettings>> => {
+    return ipcRenderer.invoke("numi:getSettings");
+  },
+  setSetting: <K extends keyof AppSettings>(key: K, value: AppSettings[K]): Promise<boolean> => {
+    return ipcRenderer.invoke("numi:setSetting", key, value);
+  },
+  getVersion: (): Promise<string> => {
+    return ipcRenderer.invoke("numi:getVersion");
+  },
+  onSettingsChanged: (callback: (settings: Required<AppSettings>) => void): (() => void) => {
+    const handler = (_event: unknown, settings: Required<AppSettings>) => callback(settings);
+    ipcRenderer.on("numi:settingsChanged", handler);
+    return () => ipcRenderer.removeListener("numi:settingsChanged", handler);
   },
   getNotes: (): Promise<Array<{ id: string; title: string; content: string }>> => {
     return ipcRenderer.invoke("numi:getNotes");

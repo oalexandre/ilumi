@@ -23,6 +23,10 @@ interface IlumiApi {
   getTheme: () => Promise<"dark" | "light">;
   setTheme: (theme: "auto" | "dark" | "light") => Promise<"dark" | "light">;
   toggleTheme: () => Promise<"dark" | "light">;
+  getSettings: () => Promise<AppSettings>;
+  setSetting: <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => Promise<boolean>;
+  getVersion: () => Promise<string>;
+  onSettingsChanged: (callback: (settings: AppSettings) => void) => () => void;
   onThemeChanged: (callback: (theme: "dark" | "light") => void) => () => void;
   onEntitiesChanged: (callback: () => void) => () => void;
   onNewNote: (callback: () => void) => () => void;
@@ -37,6 +41,17 @@ interface IlumiApi {
 }
 
 declare global {
+  type NumberFormat = "en-US" | "pt-BR" | "fr-FR";
+
+  interface AppSettings {
+    theme: "auto" | "dark" | "light";
+    globalShortcut: string;
+    alwaysOnTop: boolean;
+    numberFormat: NumberFormat;
+    maxDecimals: number | "auto";
+    useGrouping: boolean;
+  }
+
   interface Window {
     numi: IlumiApi;
   }

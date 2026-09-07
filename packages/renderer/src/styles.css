@@ -144,3 +144,56 @@ body {
     transform: translateX(-50%) translateY(0);
   }
 }
+
+/* Pending indicator: shown in place of an error while the line is still being typed */
+.result-pending {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 1.6em;
+  font-size: 12px;
+  vertical-align: top;
+}
+
+.result-pending i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  animation: pending-dot 1.2s ease-in-out infinite;
+}
+
+.result-pending i:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.result-pending i:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes pending-dot {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Error revealed by a blocked Enter */
+.result-error-reveal {
+  display: inline-block;
+  animation: error-reveal 0.25s ease-out;
+}
+
+@keyframes error-reveal {
+  0% {
+    opacity: 0;
+    transform: translateX(4px);
+  }
+  100% {
+    opacity: 0.7;
+    transform: translateX(0);
+  }
+}

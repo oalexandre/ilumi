@@ -6,9 +6,18 @@ import { ResultLine } from "./result-line";
 interface ResultsPaneProps {
   results: LineResult[];
   scrollTop: number;
+  /** Line being typed on: its error is shown as a pending indicator instead. */
+  editingLine: number | null;
+  /** Line whose error was revealed by a blocked Enter. */
+  revealedLine: number | null;
 }
 
-export function ResultsPane({ results, scrollTop }: ResultsPaneProps): React.JSX.Element {
+export function ResultsPane({
+  results,
+  scrollTop,
+  editingLine,
+  revealedLine,
+}: ResultsPaneProps): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,7 +37,12 @@ export function ResultsPane({ results, scrollTop }: ResultsPaneProps): React.JSX
     >
       <div style={{ padding: "16px", paddingBottom: "50vh" }}>
         {results.map((result) => (
-          <ResultLine key={result.line} result={result} />
+          <ResultLine
+            key={result.line}
+            result={result}
+            pending={!!result.error && result.line === editingLine && result.line !== revealedLine}
+            revealed={result.line === revealedLine}
+          />
         ))}
       </div>
     </div>

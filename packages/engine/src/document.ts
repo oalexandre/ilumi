@@ -3,6 +3,7 @@ import { EvalContext } from "./evaluator/context.js";
 import { evaluateNodeFull } from "./evaluator/index.js";
 import type { EvalOptions } from "./evaluator/index.js";
 import { formatDate, formatNumber, formatWithUnit } from "./formatter.js";
+import type { FormatOptions } from "./formatter.js";
 import { parse } from "./parser/index.js";
 import type { ParseOptions } from "./parser/index.js";
 import type { EntityRegistry } from "./registry/entity-registry.js";
@@ -71,12 +72,18 @@ export class Document {
   private context = new EvalContext();
   private entityRegistry?: EntityRegistry;
   private parseOptions: ParseOptions = {};
+  private formatOptions: FormatOptions = {};
 
   constructor(entityRegistry?: EntityRegistry) {
     this.entityRegistry = entityRegistry;
     if (entityRegistry) {
       this.rebuildParseOptions();
     }
+  }
+
+  /** Change how results are formatted. Takes effect on the next update(). */
+  setFormatOptions(options: FormatOptions): void {
+    this.formatOptions = { ...options };
   }
 
   /** Rebuild parse options from EntityRegistry (call after plugins are loaded). */
@@ -136,7 +143,13 @@ export class Document {
         this.lines[i] = {
           source: src,
           ast: null,
-          result: { line: i, value: null, formatted: "", error: "Syntax error" },
+          result: {
+            line: i,
+            value: null,
+            formatted: "",
+            error: "Syntax error",
+            errorKind: "syntax",
+          },
           references: new Set(),
         };
       }
@@ -188,9 +201,9 @@ export class Document {
           } else if (result.unit === "__date__") {
             formatted = formatDate(new Date(result.value));
           } else if (result.unit) {
-            formatted = formatWithUnit(result.value, result.unit);
+            formatted = formatWithUnit(result.value, result.unit, this.formatOptions);
           } else {
-            formatted = formatNumber(result.value);
+            formatted = formatNumber(result.value, this.formatOptions);
           }
         }
         line.result = {
@@ -207,6 +220,7 @@ export class Document {
           value: null,
           formatted: "",
           error: message,
+          errorKind: "eval",
         };
       }
     }

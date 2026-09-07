@@ -19,6 +19,9 @@ Ilumi is a notepad-style calculator app for macOS, Windows and Linux. It allows 
 - **Multiple notes** — tabbed interface with auto-save
 - **Plugin system** — extend with custom units and functions ([guide](docs/plugins.md))
 - **Dark & light themes** — follows system preference or manual toggle
+- **Global shortcut** — `Cmd/Ctrl+Alt+Space` shows or hides Ilumi from any app; optional always-on-top window
+- **Number format** — choose `1,234.56`, `1.234,56` or `1 234,56`, maximum decimal places and thousands grouping
+- **Smart error feedback** — incomplete lines show `…` while you type; Enter reveals a syntax error and keeps you on the line
 - **Timezone conversion** — `now in UTC`, `today in Tokyo`, 400+ IANA zones
 - **Syntax highlighting** — numbers, variables, functions, units, comments
 - **Share as image** — copy branded PNG card to clipboard

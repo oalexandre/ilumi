@@ -1,7 +1,12 @@
 const MAX_DECIMALS = 10;
 
 export interface FormatOptions {
+  /** BCP 47 locale that decides the decimal and thousands separators. Default "en-US". */
   locale?: string;
+  /** Upper bound on decimal places. Default: as many as the value needs, up to 10. */
+  maxDecimals?: number;
+  /** Whether to group thousands. Default true. */
+  useGrouping?: boolean;
 }
 
 export function formatNumber(value: number, options: FormatOptions = {}): string {
@@ -13,12 +18,15 @@ export function formatNumber(value: number, options: FormatOptions = {}): string
   }
 
   // Determine appropriate decimal places
-  const decimals = getSmartDecimals(value);
+  let decimals = getSmartDecimals(value);
+  if (options.maxDecimals !== undefined) {
+    decimals = Math.min(decimals, Math.max(0, Math.min(MAX_DECIMALS, options.maxDecimals)));
+  }
 
   return new Intl.NumberFormat(locale, {
     minimumFractionDigits: 0,
     maximumFractionDigits: decimals,
-    useGrouping: true,
+    useGrouping: options.useGrouping ?? true,
   }).format(value);
 }
 

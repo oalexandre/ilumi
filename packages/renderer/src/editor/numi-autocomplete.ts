@@ -21,12 +21,16 @@ const conversionCache: Map<string, CompletionEntry[]> = new Map();
 
 function mapEntityType(type: string): string {
   switch (type) {
-    case "function": return "function";
-    case "constant": return "constant";
+    case "function":
+      return "function";
+    case "constant":
+      return "constant";
     case "lineRef":
     case "dateLiteral":
-    case "baseConversion": return "keyword";
-    default: return "text";
+    case "baseConversion":
+      return "keyword";
+    default:
+      return "text";
   }
 }
 
@@ -81,15 +85,31 @@ async function getConversionTargets(sourceWord: string): Promise<CompletionEntry
   }
 }
 
+const ASSIGNMENT_RE = /^\s*([a-zA-Z_]\w*)\s*=(?!=)/;
+
+/** Variables assigned on the lines above the cursor, in order of first definition. */
+function documentVariables(context: CompletionContext): CompletionEntry[] {
+  const { doc } = context.state;
+  const currentLine = doc.lineAt(context.pos).number;
+  const seen = new Set<string>();
+  const entries: CompletionEntry[] = [];
+  for (let n = 1; n < currentLine; n++) {
+    const name = ASSIGNMENT_RE.exec(doc.line(n).text)?.[1];
+    if (name && !seen.has(name)) {
+      seen.add(name);
+      entries.push({ label: name, detail: "variable", type: "variable" });
+    }
+  }
+  return entries;
+}
+
 async function numiCompletions(context: CompletionContext): Promise<CompletionResult | null> {
   // Get the current line text up to cursor
   const line = context.state.doc.lineAt(context.pos);
   const textBefore = line.text.slice(0, context.pos - line.from);
 
   // Check if we're after "in", "to", or "as" — offer context-aware targets
-  const conversionMatch = textBefore.match(
-    /(.+?)\s+(?:in|to|as)\s+(\S*)$/i,
-  );
+  const conversionMatch = textBefore.match(/(.+?)\s+(?:in|to|as)\s+(\S*)$/i);
   if (conversionMatch) {
     const beforeKeyword = (conversionMatch[1] ?? "").trim();
     const typed = conversionMatch[2] ?? "";
@@ -106,8 +126,8 @@ async function numiCompletions(context: CompletionContext): Promise<CompletionRe
     const targets = await getConversionTargets(sourceWord);
     const filter = typed.toLowerCase();
 
-    const options = targets.filter((t) =>
-      filter === "" || t.label.toLowerCase().startsWith(filter),
+    const options = targets.filter(
+      (t) => filter === "" || t.label.toLowerCase().startsWith(filter),
     );
 
     if (options.length === 0) return null;
@@ -126,15 +146,13 @@ async function numiCompletions(context: CompletionContext): Promise<CompletionRe
   // If typing but less than 2 chars, only show on explicit Ctrl+Space
   if (word.length === 1 && !context.explicit) return null;
 
-  const [entries, allUnits] = await Promise.all([
-    loadEntityCompletions(),
-    getAllUnits(),
-  ]);
+  const [entries, allUnits] = await Promise.all([loadEntityCompletions(), getAllUnits()]);
 
   const filter = word.toLowerCase();
   const matchesFilter = (label: string) => filter === "" || label.toLowerCase().startsWith(filter);
 
   const options = [
+    ...documentVariables(context).filter((e) => matchesFilter(e.label)),
     ...entries.filter((e) => matchesFilter(e.label)),
     ...allUnits
       .filter((u) => matchesFilter(u) && u.length > 1)
