@@ -5,25 +5,25 @@ function IlumiLogo(): React.JSX.Element {
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="64" height="64">
       <defs>
         <linearGradient id="hlp-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#1e1b2e"/>
-          <stop offset="100%" stopColor="#121020"/>
+          <stop offset="0%" stopColor="#1e1b2e" />
+          <stop offset="100%" stopColor="#121020" />
         </linearGradient>
         <radialGradient id="hlp-glow" cx="50%" cy="38%" r="28%">
-          <stop offset="0%" stopColor="#ffc800" stopOpacity="0.16"/>
-          <stop offset="100%" stopOpacity="0"/>
+          <stop offset="0%" stopColor="#ffc800" stopOpacity="0.16" />
+          <stop offset="100%" stopOpacity="0" />
         </radialGradient>
         <linearGradient id="hlp-gold" x1="0.5" y1="0" x2="0.5" y2="1">
-          <stop offset="0%" stopColor="#ffe066"/>
-          <stop offset="50%" stopColor="#f0b800"/>
-          <stop offset="100%" stopColor="#cc8800"/>
+          <stop offset="0%" stopColor="#ffe066" />
+          <stop offset="50%" stopColor="#f0b800" />
+          <stop offset="100%" stopColor="#cc8800" />
         </linearGradient>
       </defs>
-      <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#hlp-bg)"/>
-      <circle cx="256" cy="165" r="130" fill="url(#hlp-glow)"/>
-      <rect x="249" y="68" width="14" height="118" rx="7" fill="url(#hlp-gold)"/>
-      <rect x="198" y="120" width="116" height="14" rx="7" fill="url(#hlp-gold)"/>
-      <rect x="198" y="208" width="116" height="14" rx="7" fill="url(#hlp-gold)"/>
-      <rect x="230" y="272" width="52" height="138" rx="14" fill="url(#hlp-gold)"/>
+      <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#hlp-bg)" />
+      <circle cx="256" cy="165" r="130" fill="url(#hlp-glow)" />
+      <rect x="249" y="68" width="14" height="118" rx="7" fill="url(#hlp-gold)" />
+      <rect x="198" y="120" width="116" height="14" rx="7" fill="url(#hlp-gold)" />
+      <rect x="198" y="208" width="116" height="14" rx="7" fill="url(#hlp-gold)" />
+      <rect x="230" y="272" width="52" height="138" rx="14" fill="url(#hlp-gold)" />
     </svg>
   );
 }
@@ -37,18 +37,27 @@ interface HelpEntry {
 interface HelpPanelProps {
   visible: boolean;
   onClose: () => void;
+  /** Opens the release notes of the running version; hidden when undefined. */
+  onWhatsNew?: () => void;
 }
 
-export function HelpPanel({ visible, onClose }: HelpPanelProps): React.JSX.Element | null {
+export function HelpPanel({
+  visible,
+  onClose,
+  onWhatsNew,
+}: HelpPanelProps): React.JSX.Element | null {
   const [coreSections, setCoreSections] = useState<HelpEntry[]>([]);
   const [communitySections, setCommunitySections] = useState<HelpEntry[]>([]);
 
   useEffect(() => {
     if (visible) {
-      window.numi.getHelpSections().then((sections) => {
-        setCoreSections(sections.core);
-        setCommunitySections(sections.community);
-      }).catch(() => {});
+      window.numi
+        .getHelpSections()
+        .then((sections) => {
+          setCoreSections(sections.core);
+          setCommunitySections(sections.community);
+        })
+        .catch(() => {});
     }
   }, [visible]);
 
@@ -95,6 +104,22 @@ export function HelpPanel({ visible, onClose }: HelpPanelProps): React.JSX.Eleme
           <span style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "2px" }}>
             ilumi.oalexandre.com.br
           </span>
+          {onWhatsNew && (
+            <button
+              onClick={onWhatsNew}
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "var(--accent)",
+                fontSize: "12px",
+                cursor: "pointer",
+                marginTop: "6px",
+                padding: 0,
+              }}
+            >
+              What's new in this version
+            </button>
+          )}
         </div>
 
         {/* Static: language features */}
@@ -149,7 +174,15 @@ export function HelpPanel({ visible, onClose }: HelpPanelProps): React.JSX.Eleme
         {/* Dynamic: community plugin help */}
         {communitySections.length > 0 && (
           <div style={{ marginTop: "8px", marginBottom: "12px" }}>
-            <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+            <span
+              style={{
+                fontSize: "11px",
+                fontWeight: 600,
+                color: "var(--text-muted)",
+                textTransform: "uppercase",
+                letterSpacing: "0.5px",
+              }}
+            >
               Community Plugins
             </span>
           </div>
@@ -187,8 +220,16 @@ function Section({
   last?: boolean;
 }): React.JSX.Element {
   return (
-    <div style={{ marginBottom: last ? 0 : "16px", paddingBottom: last ? 0 : "12px", borderBottom: last ? "none" : "1px solid var(--border)" }}>
-      <h3 style={{ fontSize: "13px", fontWeight: 600, marginBottom: "8px", color: "var(--accent)" }}>
+    <div
+      style={{
+        marginBottom: last ? 0 : "16px",
+        paddingBottom: last ? 0 : "12px",
+        borderBottom: last ? "none" : "1px solid var(--border)",
+      }}
+    >
+      <h3
+        style={{ fontSize: "13px", fontWeight: 600, marginBottom: "8px", color: "var(--accent)" }}
+      >
         {title}
       </h3>
       {children}

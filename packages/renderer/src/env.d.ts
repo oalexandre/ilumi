@@ -26,6 +26,9 @@ interface IlumiApi {
   getSettings: () => Promise<AppSettings>;
   setSetting: <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => Promise<boolean>;
   getVersion: () => Promise<string>;
+  getWhatsNew: () => Promise<ReleaseNotes | null>;
+  getReleaseNotes: () => Promise<ReleaseNotes | null>;
+  dismissWhatsNew: () => Promise<void>;
   onSettingsChanged: (callback: (settings: AppSettings) => void) => () => void;
   onThemeChanged: (callback: (theme: "dark" | "light") => void) => () => void;
   onEntitiesChanged: (callback: () => void) => () => void;
@@ -41,6 +44,17 @@ interface IlumiApi {
 }
 
 declare global {
+  interface ReleaseNotesSection {
+    title: string;
+    items: string[];
+  }
+
+  interface ReleaseNotes {
+    version: string;
+    date?: string;
+    sections: ReleaseNotesSection[];
+  }
+
   type NumberFormat = "en-US" | "pt-BR" | "fr-FR";
 
   interface AppSettings {
@@ -50,6 +64,7 @@ declare global {
     numberFormat: NumberFormat;
     maxDecimals: number | "auto";
     useGrouping: boolean;
+    lastSeenVersion: string;
   }
 
   interface Window {

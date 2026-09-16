@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from "electron";
 import type { LineResult, EntityInfo, HelpSection } from "@engine/index";
 
+import type { ReleaseNotes } from "./release-notes.js";
 import type { AppSettings } from "./settings.js";
 
 export const ilumiApi = {
@@ -42,6 +43,17 @@ export const ilumiApi = {
   },
   getVersion: (): Promise<string> => {
     return ipcRenderer.invoke("numi:getVersion");
+  },
+  /** Release notes to show after an update, or null. */
+  getWhatsNew: (): Promise<ReleaseNotes | null> => {
+    return ipcRenderer.invoke("numi:getWhatsNew");
+  },
+  /** Release notes of the running version, for opening on demand. */
+  getReleaseNotes: (): Promise<ReleaseNotes | null> => {
+    return ipcRenderer.invoke("numi:getReleaseNotes");
+  },
+  dismissWhatsNew: (): Promise<void> => {
+    return ipcRenderer.invoke("numi:dismissWhatsNew");
   },
   onSettingsChanged: (callback: (settings: Required<AppSettings>) => void): (() => void) => {
     const handler = (_event: unknown, settings: Required<AppSettings>) => callback(settings);

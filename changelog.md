@@ -6,6 +6,10 @@ All notable changes to Ilumi are documented here. The format follows
 
 ## Unreleased
 
+### Added
+
+- "What's new" panel: after updating, the first launch shows the release notes of the new version. They can be reopened any time from the Help panel.
+
 ### Fixed
 
 - Light theme now has a real colour scheme: the editor switches its CodeMirror theme with the app theme (it was stuck on the dark one, leaving near-white text on a white background) and the palette is Catppuccin Latte, the light counterpart of the dark Mocha palette.

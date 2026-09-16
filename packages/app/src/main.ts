@@ -11,6 +11,7 @@ import { getEffectiveSettings, loadSettings, saveSetting } from "./settings.js";
 import type { AppSettings } from "./settings.js";
 import { createTray } from "./tray.js";
 import { setupAutoUpdater } from "./updater.js";
+import { dismissWhatsNew, getCurrentReleaseNotes, getWhatsNew } from "./whats-new.js";
 
 // Lets tests run against an isolated data directory instead of the user's real notes/settings.
 const userDataOverride = process.env["ILUMI_USER_DATA"];
@@ -166,6 +167,10 @@ function createWindow(): void {
   ipcMain.handle("numi:getVersion", () => {
     return app.getVersion();
   });
+
+  ipcMain.handle("numi:getWhatsNew", () => getWhatsNew());
+  ipcMain.handle("numi:getReleaseNotes", () => getCurrentReleaseNotes());
+  ipcMain.handle("numi:dismissWhatsNew", () => dismissWhatsNew());
 
   ipcMain.handle(
     "numi:setSetting",

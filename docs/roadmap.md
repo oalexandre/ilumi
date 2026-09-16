@@ -1,7 +1,7 @@
 # Roadmap
 
 Ideias de evolução do Ilumi, organizadas por retorno pelo esforço. Este documento
-é uma lista de sugestões, não um compromisso. Atualizado em 2026-09-07.
+é uma lista de sugestões, não um compromisso. Atualizado em 2026-09-16.
 
 Legenda: ✅ feito · 🔨 em andamento · 💡 sugerido
 
@@ -49,6 +49,14 @@ português").
 O autocomplete cobre unidades, funções e constantes, mas não as variáveis que o
 usuário definiu nas linhas acima. É onde a pessoa mais erra o nome. As variáveis
 definidas acima da linha atual passam a aparecer no topo da lista.
+
+### ✅ Quadro de novidades após atualizar
+
+Na primeira abertura depois de uma atualização, um painel mostra a seção do
+`changelog.md` da versão instalada. O changelog é embutido no build do processo
+principal, a versão já vista fica em `settings.json` (`lastSeenVersion`) e o
+painel pode ser reaberto pelo link "What's new in this version" na ajuda. Na
+primeira instalação nada é mostrado.
 
 ## Sugeridas: produto
 

@@ -15,6 +15,8 @@ export interface AppSettings {
   /** Maximum decimal places, or "auto" to show as many as the value needs. */
   maxDecimals?: number | "auto";
   useGrouping?: boolean;
+  /** Version whose release notes the user has already seen (drives the "What's new" panel). */
+  lastSeenVersion?: string;
 }
 
 export const DEFAULT_GLOBAL_SHORTCUT = "CommandOrControl+Alt+Space";
@@ -26,6 +28,7 @@ export const DEFAULT_SETTINGS: Required<AppSettings> = {
   numberFormat: "en-US",
   maxDecimals: "auto",
   useGrouping: true,
+  lastSeenVersion: "",
 };
 
 /** Settings with defaults filled in, as shown in the UI. */

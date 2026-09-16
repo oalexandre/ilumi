@@ -7,6 +7,7 @@ import { EditorPane } from "./components/editor-pane";
 import { HelpPanel } from "./components/help-panel";
 import { ResultsPane } from "./components/results-pane";
 import { SettingsPanel } from "./components/settings-panel";
+import { WhatsNewPanel } from "./components/whats-new-panel";
 import { TabBar } from "./components/tab-bar";
 import { useEngine } from "./hooks/use-engine";
 import { useNotes } from "./hooks/use-notes";
@@ -37,6 +38,39 @@ export function App(): React.JSX.Element {
   const [scrollTop, setScrollTop] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [whatsNew, setWhatsNew] = useState<ReleaseNotes | null>(null);
+  const [hasReleaseNotes, setHasReleaseNotes] = useState(false);
+
+  // After an update, show the release notes once; also learn whether any exist for the help link.
+  useEffect(() => {
+    window.numi
+      .getWhatsNew()
+      .then((notes) => {
+        if (notes) setWhatsNew(notes);
+      })
+      .catch(() => {});
+    window.numi
+      .getReleaseNotes()
+      .then((notes) => setHasReleaseNotes(notes !== null))
+      .catch(() => {});
+  }, []);
+
+  const closeWhatsNew = useCallback(() => {
+    setWhatsNew(null);
+    void window.numi.dismissWhatsNew();
+  }, []);
+
+  const openReleaseNotes = useCallback(() => {
+    window.numi
+      .getReleaseNotes()
+      .then((notes) => {
+        if (notes) {
+          setShowHelp(false);
+          setWhatsNew(notes);
+        }
+      })
+      .catch(() => {});
+  }, []);
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Line the user is currently typing on (its errors are shown as a pending "…"),
@@ -250,11 +284,12 @@ export function App(): React.JSX.Element {
       if (e.key === "Escape") {
         if (showSettings) setShowSettings(false);
         if (showHelp) setShowHelp(false);
+        if (whatsNew) closeWhatsNew();
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [showSettings, showHelp]);
+  }, [showSettings, showHelp, whatsNew, closeWhatsNew]);
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden">
@@ -288,7 +323,12 @@ export function App(): React.JSX.Element {
         onSettings={() => setShowSettings(true)}
       />
       <SettingsPanel visible={showSettings} onClose={() => setShowSettings(false)} />
-      <HelpPanel visible={showHelp} onClose={() => setShowHelp(false)} />
+      <HelpPanel
+        visible={showHelp}
+        onClose={() => setShowHelp(false)}
+        onWhatsNew={hasReleaseNotes ? openReleaseNotes : undefined}
+      />
+      <WhatsNewPanel notes={whatsNew} onClose={closeWhatsNew} />
     </div>
   );
 }
