@@ -1,7 +1,15 @@
 import { join, resolve } from "node:path";
 
 import { app, BrowserWindow, globalShortcut, ipcMain, nativeTheme, nativeImage } from "electron";
-import { Document, createEntityRegistry, PluginHost, PluginLoader } from "@engine/index";
+import {
+  CurrencyFetcher,
+  Document,
+  createCurrencyPlugin,
+  createEntityRegistry,
+  PluginHost,
+  PluginLoader,
+  registerPlugin,
+} from "@engine/index";
 import type { EntityInfo, FormatOptions } from "@engine/index";
 
 import { loadAllNotes, saveNote, deleteNote, generateId } from "./notes.js";
@@ -25,7 +33,23 @@ const pluginHost = new PluginHost(entityRegistry);
 const pluginLoader = new PluginLoader(pluginHost, {
   builtInDir: resolve(import.meta.dirname, "../../plugins/CommunityPlugins"),
 });
+
+// Currency units: rates come from a cached hourly fetch, with built-in fallback rates offline.
+const currencyFetcher = new CurrencyFetcher(join(app.getPath("userData"), "currency-rates.json"));
+registerPlugin(entityRegistry, createCurrencyPlugin(currencyFetcher));
+
 const doc = new Document(entityRegistry);
+
+const CURRENCY_REFRESH_MS = 60 * 60 * 1000;
+
+/** Fetch fresh rates and re-register the currency units with the new ratios. */
+async function refreshCurrencyRates(): Promise<void> {
+  const before = JSON.stringify(currencyFetcher.getRates().rates);
+  await currencyFetcher.refresh();
+  if (JSON.stringify(currencyFetcher.getRates().rates) === before) return;
+  registerPlugin(entityRegistry, createCurrencyPlugin(currencyFetcher));
+  mainWindow?.webContents.send("numi:entitiesChanged");
+}
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -272,6 +296,9 @@ app.name = "Ilumi";
 app.whenReady().then(() => {
   // Before anything touches userData, so a fresh install can be told apart from an update.
   initWhatsNew();
+
+  if (currencyFetcher.isStale()) void refreshCurrencyRates();
+  setInterval(() => void refreshCurrencyRates(), CURRENCY_REFRESH_MS);
   pluginLoader.loadAll();
 
   // About panel with branding

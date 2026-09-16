@@ -169,6 +169,11 @@ export function evaluateNodeFull(
     }
 
     case "lineRef": {
+      // A variable defined by the user shadows the keyword ("total = a + b" then "20% of total").
+      const shadowing = context.get(node.ref);
+      if (shadowing !== undefined) {
+        return { value: shadowing.value, unit: shadowing.unit, isPercent: shadowing.isPercent };
+      }
       if (!entityReg) {
         throw new EvalError(`Line reference "${node.ref}" requires entity registry`);
       }
@@ -186,6 +191,12 @@ export function evaluateNodeFull(
       throw new EvalError(`Unknown node type: ${(exhaustive as ASTNode).type}`);
     }
   }
+}
+
+/** A real unit phrase: not a date marker and not a base-conversion formatter. */
+function plainUnit(unit: string | undefined): string | undefined {
+  if (!unit || unit === "__date__" || unit.startsWith("__fmt__")) return undefined;
+  return unit;
 }
 
 /** Convert a numberWithUnit to its base unit value (e.g., 1 day → 86400000 ms). */
@@ -266,18 +277,38 @@ function evaluateBinary(
     // date - date = plain number (duration in ms)
   }
 
-  switch (op) {
-    case "+":
-      return { value: l + r };
-    case "-":
-      return { value: l - r };
-    case "*":
-      return { value: l * r };
-    case "/":
-      if (r === 0) {
-        throw new EvalError("Division by zero");
+  const leftUnit = plainUnit(leftResult.unit);
+  const rightUnit = plainUnit(rightResult.unit);
+
+  if (op === "+" || op === "-") {
+    // Same dimension: convert the right side into the left side's unit and keep it.
+    let unit = leftUnit ?? rightUnit;
+    if (leftUnit && rightUnit && leftUnit !== rightUnit) {
+      const unitReg = entityReg?.getUnitRegistry();
+      const from = unitReg?.findByPhrase(rightUnit);
+      const to = unitReg?.findByPhrase(leftUnit);
+      if (unitReg && from && to) {
+        try {
+          r = unitReg.convert(r, from.id, to.id);
+        } catch {
+          throw new EvalError(`Cannot ${op === "+" ? "add" : "subtract"} "${rightUnit}" and "${leftUnit}"`);
+        }
       }
-      return { value: l / r };
+      unit = leftUnit;
+    }
+    return { value: op === "+" ? l + r : l - r, unit };
+  }
+
+  if (op === "*" || op === "/") {
+    // Scaling a quantity by a plain number keeps its unit; unit × unit drops it.
+    const unit = leftUnit && rightUnit ? undefined : (leftUnit ?? rightUnit);
+    if (op === "/" && r === 0) {
+      throw new EvalError("Division by zero");
+    }
+    return { value: op === "*" ? l * r : l / r, unit };
+  }
+
+  switch (op) {
     case "^":
       return { value: Math.pow(l, r) };
     case "mod":

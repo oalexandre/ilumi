@@ -129,20 +129,14 @@ Postfix
     { return { type: "percent", value: expr }; }
   / Primary
 
+// Conversions ("in" / "to" / "as") are handled only at the top level (see
+// Conversion) so that "2 hours + 30 minutes in minutes" converts the whole sum.
 Primary
-  = FunctionCallParens / FunctionCallSpace / ExpressionUnitConversion / ExpressionWithUnit / ParenExpr / UnitConversion / NumberWithUnit / Number / DateLiteral / LineRef / Constant / Variable
-
-UnitConversion
-  = n:Number __ fromUnit:UnitName __ ("in" / "to" / "as") __ toUnit:UnitName
-    { return { type: "conversion", value: { type: "numberWithUnit", value: n.value, unit: fromUnit }, targetUnit: toUnit }; }
+  = FunctionCallParens / FunctionCallSpace / ExpressionWithUnit / ParenExpr / NumberWithUnit / Number / DateLiteral / LineRef / Constant / Variable
 
 NumberWithUnit
   = n:Number __ unit:UnitName
     { return { type: "numberWithUnit", value: n.value, unit }; }
-
-ExpressionUnitConversion
-  = v:(ParenExpr / Variable) __ fromUnit:UnitName __ ("in" / "to" / "as") __ toUnit:UnitName
-    { return { type: "conversion", value: { type: "expressionWithUnit", expression: v, unit: fromUnit }, targetUnit: toUnit }; }
 
 ExpressionWithUnit
   = v:(ParenExpr / Variable) __ unit:UnitName
@@ -165,13 +159,21 @@ FunctionName
     &{ return KNOWN_FUNCTIONS.has(name); }
     { return name; }
 
+// Longest phrase first, then shorter ones, so "10 km / 2" does not swallow the
+// operator into a bogus multi-word unit (PEG cannot backtrack into a greedy "*").
 UnitName
-  = name:$(NonKeywordWord (__ NonKeywordWord)*)
+  = name:$(NonKeywordWord __ NonKeywordWord __ NonKeywordWord)
     &{ return isUnit(name.replace(/\s+/g, ' ')); }
     { return name.replace(/\s+/g, ' '); }
+  / name:$(NonKeywordWord __ NonKeywordWord)
+    &{ return isUnit(name.replace(/\s+/g, ' ')); }
+    { return name.replace(/\s+/g, ' '); }
+  / name:$(NonKeywordWord)
+    &{ return isUnit(name); }
+    { return name; }
 
 NonKeywordWord
-  = word:$([a-zA-Z°²³µ/][a-zA-Z0-9°²³µ/]*)
+  = word:$([a-zA-Z°²³µ][a-zA-Z0-9°²³µ]*)
     !{ return ["in","to","as","of","off","on","mod"].includes(word.toLowerCase()); }
 
 DateLiteral

@@ -31,8 +31,12 @@ budget - 10%
 // Units and conversions
 5 km in miles
 72 °F in °C
-90 minutes in hours
+2 hours + 30 minutes in minutes
 1 GB in MB
+
+// Currency (rates refresh hourly)
+100 usd in brl
+50 eur in usd
 
 // Dates
 today + 2 weeks

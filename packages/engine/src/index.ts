@@ -6,6 +6,7 @@ export { Document } from "./document.js";
 export { formatNumber, formatWithUnit } from "./formatter.js";
 export type { FormatOptions } from "./formatter.js";
 export { UnitRegistry } from "./units/index.js";
+export { CurrencyFetcher } from "./currency/fetcher.js";
 export type { UnitDefinition } from "./units/index.js";
 export { PluginHost, PluginLoader } from "./plugins/index.js";
 export type { PluginInfo, PluginLoaderOptions } from "./plugins/index.js";
