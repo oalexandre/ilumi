@@ -38,7 +38,7 @@ export function App(): React.JSX.Element {
   const [scrollTop, setScrollTop] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
-  const [whatsNew, setWhatsNew] = useState<ReleaseNotes | null>(null);
+  const [whatsNew, setWhatsNew] = useState<ReleaseNotes[] | null>(null);
   const [hasReleaseNotes, setHasReleaseNotes] = useState(false);
 
   // After an update, show the release notes once; also learn whether any exist for the help link.
@@ -46,12 +46,12 @@ export function App(): React.JSX.Element {
     window.numi
       .getWhatsNew()
       .then((notes) => {
-        if (notes) setWhatsNew(notes);
+        if (notes && notes.length > 0) setWhatsNew(notes);
       })
       .catch(() => {});
     window.numi
       .getReleaseNotes()
-      .then((notes) => setHasReleaseNotes(notes !== null))
+      .then((notes) => setHasReleaseNotes(notes.length > 0))
       .catch(() => {});
   }, []);
 
@@ -64,7 +64,7 @@ export function App(): React.JSX.Element {
     window.numi
       .getReleaseNotes()
       .then((notes) => {
-        if (notes) {
+        if (notes.length > 0) {
           setShowHelp(false);
           setWhatsNew(notes);
         }

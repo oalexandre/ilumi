@@ -44,13 +44,17 @@ export const ilumiApi = {
   getVersion: (): Promise<string> => {
     return ipcRenderer.invoke("numi:getVersion");
   },
-  /** Release notes to show after an update, or null. */
-  getWhatsNew: (): Promise<ReleaseNotes | null> => {
+  /** Release notes to show after an update (every unseen version, newest first), or null. */
+  getWhatsNew: (): Promise<ReleaseNotes[] | null> => {
     return ipcRenderer.invoke("numi:getWhatsNew");
   },
-  /** Release notes of the running version, for opening on demand. */
-  getReleaseNotes: (): Promise<ReleaseNotes | null> => {
+  /** Release notes of the running version, for opening on demand (empty when missing). */
+  getReleaseNotes: (): Promise<ReleaseNotes[]> => {
     return ipcRenderer.invoke("numi:getReleaseNotes");
+  },
+  /** Every entry of the bundled changelog, newest first. */
+  getChangelog: (): Promise<ReleaseNotes[]> => {
+    return ipcRenderer.invoke("numi:getChangelog");
   },
   dismissWhatsNew: (): Promise<void> => {
     return ipcRenderer.invoke("numi:dismissWhatsNew");

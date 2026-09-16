@@ -26,8 +26,9 @@ interface IlumiApi {
   getSettings: () => Promise<AppSettings>;
   setSetting: <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => Promise<boolean>;
   getVersion: () => Promise<string>;
-  getWhatsNew: () => Promise<ReleaseNotes | null>;
-  getReleaseNotes: () => Promise<ReleaseNotes | null>;
+  getWhatsNew: () => Promise<ReleaseNotes[] | null>;
+  getReleaseNotes: () => Promise<ReleaseNotes[]>;
+  getChangelog: () => Promise<ReleaseNotes[]>;
   dismissWhatsNew: () => Promise<void>;
   onSettingsChanged: (callback: (settings: AppSettings) => void) => () => void;
   onThemeChanged: (callback: (theme: "dark" | "light") => void) => () => void;

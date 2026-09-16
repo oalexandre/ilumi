@@ -11,7 +11,7 @@ import { getEffectiveSettings, loadSettings, saveSetting } from "./settings.js";
 import type { AppSettings } from "./settings.js";
 import { createTray } from "./tray.js";
 import { setupAutoUpdater } from "./updater.js";
-import { dismissWhatsNew, getCurrentReleaseNotes, getWhatsNew } from "./whats-new.js";
+import { dismissWhatsNew, getChangelog, getCurrentReleaseNotes, getWhatsNew, initWhatsNew } from "./whats-new.js";
 
 // Lets tests run against an isolated data directory instead of the user's real notes/settings.
 const userDataOverride = process.env["ILUMI_USER_DATA"];
@@ -170,6 +170,7 @@ function createWindow(): void {
 
   ipcMain.handle("numi:getWhatsNew", () => getWhatsNew());
   ipcMain.handle("numi:getReleaseNotes", () => getCurrentReleaseNotes());
+  ipcMain.handle("numi:getChangelog", () => getChangelog());
   ipcMain.handle("numi:dismissWhatsNew", () => dismissWhatsNew());
 
   ipcMain.handle(
@@ -269,6 +270,8 @@ app.on("before-quit", () => {
 app.name = "Ilumi";
 
 app.whenReady().then(() => {
+  // Before anything touches userData, so a fresh install can be told apart from an update.
+  initWhatsNew();
   pluginLoader.loadAll();
 
   // About panel with branding

@@ -3,6 +3,8 @@ import { join } from "node:path";
 
 import { app } from "electron";
 
+import { createWelcomeNote } from "./welcome-note.js";
+
 export interface NoteData {
   id: string;
   title: string;
@@ -26,7 +28,8 @@ export function loadAllNotes(): NoteData[] {
   const files = readdirSync(dir).filter((f) => f.endsWith(".json"));
 
   if (files.length === 0) {
-    const defaultNote: NoteData = { id: generateId(), title: "Untitled", content: "" };
+    // First launch: open with a guided tour instead of an empty note.
+    const defaultNote = createWelcomeNote(generateId());
     saveNote(defaultNote);
     return [defaultNote];
   }

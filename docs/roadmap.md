@@ -55,8 +55,16 @@ definidas acima da linha atual passam a aparecer no topo da lista.
 Na primeira abertura depois de uma atualização, um painel mostra a seção do
 `changelog.md` da versão instalada. O changelog é embutido no build do processo
 principal, a versão já vista fica em `settings.json` (`lastSeenVersion`) e o
-painel pode ser reaberto pelo link "What's new in this version" na ajuda. Na
-primeira instalação nada é mostrado.
+painel pode ser reaberto pelo link "What's new in this version" na ajuda e tem
+um link para o changelog completo. Quem pula versões vê todas as que não viu,
+agrupadas por versão. Na primeira instalação nada é mostrado; quem já usava o
+app antes do painel existir vê tudo desde a 0.2.1.
+
+### ✅ Nota de boas-vindas
+
+Na primeira instalação a nota inicial é um tour: lista de compras com `sum`,
+variáveis, porcentagens, unidades, datas, bases e funções. Toda linha avalia sem
+erro. Notas criadas depois continuam vazias.
 
 ## Sugeridas: produto
 
@@ -131,11 +139,6 @@ Um cask no Homebrew e um manifesto no winget deixam o app instalável com um
 comando e atualizável pelo gerenciador. É mais documentação e automação do que
 código; pode ser gerado a partir dos artefatos da release.
 
-### 💡 Nota de boas-vindas
-
-No primeiro uso, a nota inicial é vazia. Uma nota com exemplos prontos de
-variáveis, unidades, datas e porcentagem ensina o produto sem manual.
-
 ## Experiência de uso
 
 ### 💡 Quebra de linha com alinhamento
@@ -185,6 +188,6 @@ resultados e o de configurações sem subir o Electron.
 
 ## Ordem sugerida
 
-Por impacto para o usuário final: assinatura no macOS, nota de boas-vindas,
-quebra de linha com alinhamento. Depois, seções e subtotais e o autocomplete já
+Por impacto para o usuário final: assinatura no macOS, quebra de linha com
+alinhamento. Depois, seções e subtotais e o autocomplete já
 cobrem a maior parte do que falta no dia a dia.
