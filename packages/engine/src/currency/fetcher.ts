@@ -48,6 +48,13 @@ const FALLBACK_RATES: CurrencyRates = {
   },
 };
 
+/** Where the rates in use came from, so results can be flagged when they are not live. */
+export interface CurrencyRateStatus {
+  /** "fallback": built-in table, never fetched. "cache": fetched at `timestamp` (this session or earlier). */
+  source: "fallback" | "cache";
+  timestamp: number;
+}
+
 export class CurrencyFetcher {
   private rates: CurrencyRates | null = null;
   private cachePath: string | null = null;
@@ -60,6 +67,12 @@ export class CurrencyFetcher {
 
   getRates(): CurrencyRates {
     return this.rates ?? FALLBACK_RATES;
+  }
+
+  getStatus(): CurrencyRateStatus {
+    return this.rates
+      ? { source: "cache", timestamp: this.rates.timestamp }
+      : { source: "fallback", timestamp: 0 };
   }
 
   getRate(currency: string): number | undefined {

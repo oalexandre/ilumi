@@ -7,6 +7,7 @@ export { formatNumber, formatWithUnit } from "./formatter.js";
 export type { FormatOptions } from "./formatter.js";
 export { UnitRegistry } from "./units/index.js";
 export { CurrencyFetcher } from "./currency/fetcher.js";
+export type { CurrencyRateStatus } from "./currency/fetcher.js";
 export type { UnitDefinition } from "./units/index.js";
 export { PluginHost, PluginLoader } from "./plugins/index.js";
 export type { PluginInfo, PluginLoaderOptions } from "./plugins/index.js";
@@ -32,6 +33,8 @@ export interface LineResult {
   error?: string;
   /** "syntax" when the line failed to parse, "eval" when it parsed but failed to evaluate. */
   errorKind?: "syntax" | "eval";
+  /** The value is valid but computed from questionable data (e.g. offline exchange rates). */
+  warning?: string;
 }
 
 import { Document } from "./document.js";

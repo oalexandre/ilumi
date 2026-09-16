@@ -1,5 +1,71 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import type { LineResult } from "@engine/index";
+
+/** Small "offline" badge shown before a value computed from non-live data; hover explains why. */
+function WarningBadge({ message }: { message: string }): React.JSX.Element {
+  const [tipPos, setTipPos] = useState<{ y: number; right: number } | null>(null);
+  const ref = useRef<HTMLSpanElement>(null);
+
+  return (
+    <span
+      ref={ref}
+      data-testid="result-warning"
+      aria-label={message}
+      onMouseEnter={() => {
+        const rect = ref.current?.getBoundingClientRect();
+        if (rect) setTipPos({ y: rect.top - 6, right: window.innerWidth - rect.right });
+      }}
+      onMouseLeave={() => setTipPos(null)}
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        verticalAlign: "middle",
+        marginRight: "6px",
+        color: "var(--text-warning)",
+        cursor: "help",
+      }}
+    >
+      <svg
+        width="13"
+        height="13"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M22.61 16.95A5 5 0 0 0 18 10h-1.26a8 8 0 0 0-7.05-6M5 5a8 8 0 0 0 4 15h9a5 5 0 0 0 1.7-.3" />
+        <line x1="1" y1="1" x2="23" y2="23" />
+      </svg>
+      {tipPos && (
+        <span
+          style={{
+            position: "fixed",
+            top: tipPos.y,
+            right: tipPos.right,
+            transform: "translateY(-100%)",
+            background: "var(--bg-primary)",
+            color: "var(--text-primary)",
+            border: "1px solid var(--border)",
+            borderRadius: "4px",
+            padding: "4px 8px",
+            fontSize: "11px",
+            fontFamily: "system-ui, sans-serif",
+            maxWidth: "280px",
+            whiteSpace: "normal",
+            textAlign: "left",
+            pointerEvents: "none",
+            zIndex: 9999,
+          }}
+        >
+          <b style={{ color: "var(--text-warning)" }}>Offline rates.</b> {message}
+        </span>
+      )}
+    </span>
+  );
+}
 
 interface ResultLineProps {
   result: LineResult;
@@ -133,16 +199,19 @@ export function ResultLine({
           {result.error}
         </span>
       ) : (
-        <span
-          data-testid="result-value"
-          style={{
-            color: "var(--text-result)",
-            transition: "opacity 0.15s",
-          }}
-          className="hover:opacity-80"
-        >
-          {result.formatted}
-        </span>
+        <>
+          {result.warning && <WarningBadge message={result.warning} />}
+          <span
+            data-testid="result-value"
+            style={{
+              color: "var(--text-result)",
+              transition: "opacity 0.15s",
+            }}
+            className="hover:opacity-80"
+          >
+            {result.formatted}
+          </span>
+        </>
       )}
     </div>
   );

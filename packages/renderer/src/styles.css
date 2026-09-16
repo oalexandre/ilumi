@@ -8,6 +8,7 @@
   --text-primary: #cdd6f4;
   --text-result: #a6e3a1;
   --text-error: #f38ba8;
+  --text-warning: #fab387;
   --text-muted: #546e7a;
   --border: #313244;
   --accent: #89b4fa;
@@ -24,6 +25,7 @@
   --text-primary: #4c4f69;
   --text-result: #40a02b;
   --text-error: #d20f39;
+  --text-warning: #fe640b;
   --text-muted: #9ca0b0;
   --border: #ccd0da;
   --accent: #1e66f5;

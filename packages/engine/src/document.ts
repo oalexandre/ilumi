@@ -8,6 +8,7 @@ import { parse } from "./parser/index.js";
 import type { ParseOptions } from "./parser/index.js";
 import type { EntityRegistry } from "./registry/entity-registry.js";
 import type { LineResultEntry } from "./core-plugins/types.js";
+import type { CurrencyRateStatus } from "./currency/fetcher.js";
 
 import type { LineResult } from "./index.js";
 
@@ -53,6 +54,9 @@ function collectVariableRefs(node: ASTNode): Set<string> {
       case "conversion":
         walk(n.value);
         break;
+      case "expressionWithUnit":
+        walk(n.expression);
+        break;
       case "number":
       case "numberWithUnit":
       case "date":
@@ -67,12 +71,67 @@ function collectVariableRefs(node: ASTNode): Set<string> {
   return refs;
 }
 
+/** Every unit phrase mentioned by a line (literals, expression units and conversion targets). */
+function collectUnitPhrases(node: ASTNode): string[] {
+  const units: string[] = [];
+
+  function walk(n: ASTNode): void {
+    switch (n.type) {
+      case "numberWithUnit":
+        units.push(n.unit);
+        break;
+      case "expressionWithUnit":
+        units.push(n.unit);
+        walk(n.expression);
+        break;
+      case "conversion":
+        units.push(n.targetUnit);
+        walk(n.value);
+        break;
+      case "binary":
+        walk(n.left);
+        walk(n.right);
+        break;
+      case "unary":
+        walk(n.value);
+        break;
+      case "assignment":
+        walk(n.value);
+        break;
+      case "call":
+        n.args.forEach(walk);
+        break;
+      case "percent":
+        walk(n.value);
+        break;
+      case "percentOp":
+        walk(n.base);
+        walk(n.target);
+        break;
+      case "variable":
+      case "number":
+      case "date":
+      case "lineRef":
+      case "comment":
+      case "empty":
+        break;
+    }
+  }
+
+  walk(node);
+  return units;
+}
+
+/** Cached rates older than this are flagged as possibly outdated. */
+const STALE_RATES_MS = 24 * 60 * 60 * 1000;
+
 export class Document {
   private lines: LineState[] = [];
   private context = new EvalContext();
   private entityRegistry?: EntityRegistry;
   private parseOptions: ParseOptions = {};
   private formatOptions: FormatOptions = {};
+  private currencyRateStatus: CurrencyRateStatus | null = null;
 
   constructor(entityRegistry?: EntityRegistry) {
     this.entityRegistry = entityRegistry;
@@ -84,6 +143,31 @@ export class Document {
   /** Change how results are formatted. Takes effect on the next update(). */
   setFormatOptions(options: FormatOptions): void {
     this.formatOptions = { ...options };
+  }
+
+  /** Tell the document where exchange rates come from, so currency results can carry a warning. */
+  setCurrencyRateStatus(status: CurrencyRateStatus | null): void {
+    this.currencyRateStatus = status;
+  }
+
+  /** Warning for a line whose value depends on exchange rates, or undefined when the rates are trustworthy. */
+  private currencyWarning(ast: ASTNode, resultUnit: string | undefined): string | undefined {
+    const status = this.currencyRateStatus;
+    if (!status || !this.entityRegistry) return undefined;
+    if (status.source === "cache" && Date.now() - status.timestamp < STALE_RATES_MS)
+      return undefined;
+
+    const unitReg = this.entityRegistry.getUnitRegistry();
+    const phrases = collectUnitPhrases(ast);
+    if (resultUnit) phrases.push(resultUnit);
+    const usesCurrency = phrases.some((p) => unitReg.findByPhrase(p)?.id.startsWith("currency_"));
+    if (!usesCurrency) return undefined;
+
+    if (status.source === "fallback") {
+      return "Converted with built-in offline exchange rates. The result may be inaccurate.";
+    }
+    const when = new Date(status.timestamp).toLocaleString();
+    return `Converted with exchange rates cached on ${when}. The result may be outdated.`;
   }
 
   /** Rebuild parse options from EntityRegistry (call after plugins are loaded). */
@@ -206,10 +290,13 @@ export class Document {
             formatted = formatNumber(result.value, this.formatOptions);
           }
         }
+        const warning =
+          result.value !== null ? this.currencyWarning(line.ast, result.unit) : undefined;
         line.result = {
           line: i,
           value: result.value,
           formatted,
+          ...(warning ? { warning } : {}),
         };
         previousResults[i] =
           result.value !== null ? { value: result.value, isPercent: result.isPercent } : null;

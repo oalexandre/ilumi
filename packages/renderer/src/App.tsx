@@ -110,6 +110,13 @@ export function App(): React.JSX.Element {
     });
   }, [evaluateNow]);
 
+  // Plugins reloaded or exchange rates refreshed: results (and their warnings) may differ.
+  useEffect(() => {
+    return window.numi.onEntitiesChanged(() => {
+      void evaluateNow(activeContentRef.current);
+    });
+  }, [evaluateNow]);
+
   const handleEditingLine = useCallback((line: number | null) => {
     setEditingLine(line);
     // Typing again hides the revealed error until the next Enter.

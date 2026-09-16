@@ -19,7 +19,13 @@ import { getEffectiveSettings, loadSettings, saveSetting } from "./settings.js";
 import type { AppSettings } from "./settings.js";
 import { createTray } from "./tray.js";
 import { setupAutoUpdater } from "./updater.js";
-import { dismissWhatsNew, getChangelog, getCurrentReleaseNotes, getWhatsNew, initWhatsNew } from "./whats-new.js";
+import {
+  dismissWhatsNew,
+  getChangelog,
+  getCurrentReleaseNotes,
+  getWhatsNew,
+  initWhatsNew,
+} from "./whats-new.js";
 
 // Lets tests run against an isolated data directory instead of the user's real notes/settings.
 const userDataOverride = process.env["ILUMI_USER_DATA"];
@@ -39,15 +45,19 @@ const currencyFetcher = new CurrencyFetcher(join(app.getPath("userData"), "curre
 registerPlugin(entityRegistry, createCurrencyPlugin(currencyFetcher));
 
 const doc = new Document(entityRegistry);
+doc.setCurrencyRateStatus(currencyFetcher.getStatus());
 
 const CURRENCY_REFRESH_MS = 60 * 60 * 1000;
 
 /** Fetch fresh rates and re-register the currency units with the new ratios. */
 async function refreshCurrencyRates(): Promise<void> {
-  const before = JSON.stringify(currencyFetcher.getRates().rates);
+  // ILUMI_OFFLINE=1 skips the network, to exercise the offline-rates path in tests and demos.
+  if (process.env["ILUMI_OFFLINE"]) return;
+  const before = JSON.stringify(currencyFetcher.getRates());
   await currencyFetcher.refresh();
-  if (JSON.stringify(currencyFetcher.getRates().rates) === before) return;
+  if (JSON.stringify(currencyFetcher.getRates()) === before) return;
   registerPlugin(entityRegistry, createCurrencyPlugin(currencyFetcher));
+  doc.setCurrencyRateStatus(currencyFetcher.getStatus());
   mainWindow?.webContents.send("numi:entitiesChanged");
 }
 

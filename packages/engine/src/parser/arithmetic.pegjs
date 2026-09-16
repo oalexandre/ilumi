@@ -50,8 +50,11 @@ function isUnit(name) {
 }
 }
 
+// Leading and trailing blanks are ignored so a line typed with a trailing space
+// is not a syntax error.
 Line
-  = Comment / Assignment / Expression / Empty
+  = _ body:(Comment / Assignment / Expression) _ { return body; }
+  / Empty
 
 Comment
   = "//" rest:$(.*)  { return { type: "comment", text: rest.trim() }; }

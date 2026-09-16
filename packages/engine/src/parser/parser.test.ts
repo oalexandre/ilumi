@@ -3,6 +3,16 @@ import { describe, it, expect } from "vitest";
 import { parse } from "./index.js";
 
 describe("parser", () => {
+  describe("whitespace", () => {
+    it("ignores leading and trailing blanks", () => {
+      expect(parse("1 + 1 ")).toEqual(parse("1 + 1"));
+      expect(parse("  1 + 1")).toEqual(parse("1 + 1"));
+      expect(parse("x = 2 ")).toEqual(parse("x = 2"));
+      expect(parse(" // note ")).toEqual({ type: "comment", text: "note" });
+      expect(parse("   ")).toEqual({ type: "empty" });
+    });
+  });
+
   describe("performance", () => {
     it("parses deeply nested parentheses in linear time (packrat cache)", () => {
       // Without memoization each nesting level multiplied the work ~15x and
