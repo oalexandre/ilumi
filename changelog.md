@@ -10,6 +10,12 @@ bullets. Once the interface is translated, the same section must be written in
 `changelog.pt-BR.md` as well: the panel loads the file for the chosen language
 and falls back to this one. Keep both files in sync on every release.
 
+## Unreleased
+
+### Fixed
+
+- macOS: the "Restart" button after an update did nothing. The app is not signed with a Developer ID, so the system installer refuses the new bundle. On macOS the app no longer downloads updates in the background; when a new version exists it offers a "Download" button that opens the right DMG for your Mac and quits, so you can drag the new version over the old one. Windows and Linux keep installing automatically.
+
 ## 0.2.2 — 2026-09-16
 
 ### Added
