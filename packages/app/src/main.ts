@@ -108,6 +108,18 @@ function createWindow(): void {
     },
   });
 
+  // The built-in zoomIn role only binds "CmdOrCtrl+Plus", which most keyboards
+  // can't produce without Shift. Handle "=" and "+" (main row or numpad) here so
+  // Ctrl/Cmd+= and Ctrl/Cmd++ zoom in, mirroring Ctrl/Cmd+- for zoom out.
+  mainWindow.webContents.on("before-input-event", (event, input) => {
+    if (input.type !== "keyDown" || !(input.control || input.meta) || input.alt) return;
+    if (input.key !== "=" && input.key !== "+") return;
+    const wc = mainWindow?.webContents;
+    if (!wc) return;
+    wc.setZoomLevel(wc.getZoomLevel() + 0.5);
+    event.preventDefault();
+  });
+
   ipcMain.handle("numi:evaluate", (_event, source: string) => {
     return doc.update(source);
   });

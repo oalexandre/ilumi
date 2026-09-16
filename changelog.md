@@ -4,6 +4,13 @@ All notable changes to Ilumi are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+### Fixed
+
+- `Cmd/Ctrl+=` and `Cmd/Ctrl++` now zoom in (only `Cmd/Ctrl+Shift+=` worked before; zoom out already worked with `Cmd/Ctrl+-`).
+- Complex formulas with nested parentheses no longer freeze the app: the parser now memoizes intermediate results (packrat cache), turning exponential backtracking into linear time.
+
 ## 0.2.0 — 2026-09-07
 
 ### Added

@@ -3,6 +3,18 @@ import { describe, it, expect } from "vitest";
 import { parse } from "./index.js";
 
 describe("parser", () => {
+  describe("performance", () => {
+    it("parses deeply nested parentheses in linear time (packrat cache)", () => {
+      // Without memoization each nesting level multiplied the work ~15x and
+      // this expression took minutes to parse.
+      const src = "((((((((1+2)*3)+4)*5)+6)*7)+8)*9)";
+      const start = performance.now();
+      const ast = parse(src);
+      expect(performance.now() - start).toBeLessThan(500);
+      expect(ast.type).toBe("binary");
+    });
+  });
+
   describe("numbers", () => {
     it("should parse integers", () => {
       expect(parse("42")).toEqual({ type: "number", value: 42 });
