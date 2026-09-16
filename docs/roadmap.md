@@ -165,6 +165,14 @@ O público é brasileiro e todos os textos da UI são em inglês. Diferente das
 palavras-chave em português no engine: aqui é só menu, configurações, ajuda e
 mensagens de erro.
 
+O que precisa existir: configuração de idioma (auto, pt-BR, en), dicionário de
+strings no renderer e no processo principal (menu nativo), erros do engine com
+código em vez de texto, e conteúdos longos por idioma. O painel de novidades já
+está preparado: basta carregar `changelog.pt-BR.md` quando existir, com o
+`changelog.md` (inglês) como fallback. A partir daí, **toda release precisa da
+seção escrita nos dois changelogs**, e a nota de boas-vindas também ganha uma
+versão por idioma.
+
 ## Qualidade e manutenção
 
 ### 💡 E2E no CI

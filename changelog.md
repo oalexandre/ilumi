@@ -4,15 +4,28 @@ All notable changes to Ilumi are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
-## Unreleased
+This file is shown inside the app ("What's new" panel), so every release needs
+a `## X.Y.Z — YYYY-MM-DD` section with `### Added` / `### Changed` / `### Fixed`
+bullets. Once the interface is translated, the same section must be written in
+`changelog.pt-BR.md` as well: the panel loads the file for the chosen language
+and falls back to this one. Keep both files in sync on every release.
+
+## 0.2.2 — 2026-09-16
 
 ### Added
 
-- "What's new" panel: after updating, the first launch shows the release notes of the new version. They can be reopened any time from the Help panel.
+- "What's new" panel: the first launch after an update shows the release notes of every version you skipped, grouped by version. It can be reopened from the Help panel ("What's new in this version") and has a link to the full changelog.
+- Welcome note on first install: a guided tour with sums, variables, percentages, unit conversions, dates, number bases and functions. Every line evaluates, so the first screen is a working example.
 
 ### Fixed
 
-- Light theme now has a real colour scheme: the editor switches its CodeMirror theme with the app theme (it was stuck on the dark one, leaving near-white text on a white background) and the palette is Catppuccin Latte, the light counterpart of the dark Mocha palette.
+- Currency conversion works in the app (`100 usd in brl`). The engine already had the plugin and the rate fetcher, but the app never registered them. Rates are cached in the user data folder, refreshed hourly and fall back to built-in values offline.
+- When a currency result was computed with offline rates (the built-in table, or a cache older than a day), the line shows an "offline" icon and hovering it explains that the result may be inaccurate. Results refresh automatically when live rates arrive.
+- A line with leading or trailing spaces (`1 + 1 `) no longer reports a syntax error.
+- Arithmetic with units: `2 hours + 30 minutes in minutes` now converts the whole sum (150 min) instead of only the last term. Adding or subtracting compatible units converts to the left operand's unit (`1 km + 500 m` = 1.5 km), scaling by a plain number keeps the unit (`2 hours * 2` = 4 hours), and mixing incompatible units is an error instead of a silent number.
+- Dividing a quantity by a number (`10 km / 2`) was a syntax error because the unit name swallowed the slash.
+- A variable named like a line-reference keyword (`total`, `sum`, `avg`, …) now shadows the keyword, so `total = rent + food` followed by `20% of total` uses the variable.
+- Light theme now has a real colour scheme. The editor follows the app theme (it was stuck on the dark one, leaving near-white text on a white background) and the palette is Catppuccin Latte, the light counterpart of the dark Mocha palette.
 - Function names (`sqrt`, `round`, …) are highlighted again in both themes.
 
 ## 0.2.1 — 2026-09-16
