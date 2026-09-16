@@ -22,7 +22,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 }
 
 export function App(): React.JSX.Element {
-  const { toggle } = useTheme();
+  const { theme, toggle } = useTheme();
   const { results, evaluate, evaluateNow } = useEngine();
   const {
     notes,
@@ -262,6 +262,7 @@ export function App(): React.JSX.Element {
       <div ref={contentRef} className="flex flex-1 overflow-hidden app-content">
         <EditorPane
           key={activeId}
+          theme={theme}
           initialContent={initialContentRef.current}
           onChange={handleChange}
           onScroll={handleScroll}

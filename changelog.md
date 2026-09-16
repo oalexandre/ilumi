@@ -4,6 +4,13 @@ All notable changes to Ilumi are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+### Fixed
+
+- Light theme now has a real colour scheme: the editor switches its CodeMirror theme with the app theme (it was stuck on the dark one, leaving near-white text on a white background) and the palette is Catppuccin Latte, the light counterpart of the dark Mocha palette.
+- Function names (`sqrt`, `round`, …) are highlighted again in both themes.
+
 ## 0.2.1 — 2026-09-16
 
 ### Fixed

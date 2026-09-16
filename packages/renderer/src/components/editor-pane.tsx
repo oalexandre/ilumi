@@ -10,10 +10,12 @@ import {
 
 import { numiAutocompletion, invalidateEntityCache } from "../editor/numi-autocomplete";
 import { numiLanguage, updateLanguageSets } from "../editor/numi-language";
-import { darkThemeExtension } from "../editor/numi-theme";
+import { editorTheme, setEditorTheme } from "../editor/numi-theme";
+import type { Theme } from "../hooks/use-theme";
 
 interface EditorPaneProps {
   initialContent?: string;
+  theme: Theme;
   onChange: (text: string) => void;
   onScroll: (scrollTop: number) => void;
   /** Called with the 0-based line the user is typing on, or null when they leave it (cursor move, blur). */
@@ -29,6 +31,7 @@ function cursorLine(state: EditorState): number {
 
 export function EditorPane({
   initialContent = "",
+  theme,
   onChange,
   onScroll,
   onEditingLine,
@@ -46,6 +49,13 @@ export function EditorPane({
   onScrollRef.current = onScroll;
   onEditingLineRef.current = onEditingLine;
   onEnterRef.current = onEnter;
+  const themeRef = useRef(theme);
+  themeRef.current = theme;
+
+  // Swap the CodeMirror theme in place; the editor itself only mounts once per note.
+  useEffect(() => {
+    if (viewRef.current) setEditorTheme(viewRef.current, theme);
+  }, [theme]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -54,7 +64,7 @@ export function EditorPane({
       doc: initialContent,
       extensions: [
         numiLanguage,
-        ...darkThemeExtension,
+        editorTheme(themeRef.current),
         numiAutocompletion,
         lineNumbers(),
         history(),

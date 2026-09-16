@@ -18,18 +18,18 @@
 }
 
 [data-theme="light"] {
-  --bg-primary: #ffffff;
-  --bg-editor: #ffffff;
-  --bg-results: #f8fafc;
-  --text-primary: #1e293b;
-  --text-result: #16a34a;
-  --text-error: #dc2626;
-  --text-muted: #9ca3af;
-  --border: #e2e8f0;
-  --accent: #2563eb;
-  --hover: rgba(0, 0, 0, 0.04);
-  --selection: rgba(37, 99, 235, 0.15);
-  --active-line: rgba(0, 0, 0, 0.02);
+  --bg-primary: #eff1f5;
+  --bg-editor: #eff1f5;
+  --bg-results: #e6e9ef;
+  --text-primary: #4c4f69;
+  --text-result: #40a02b;
+  --text-error: #d20f39;
+  --text-muted: #9ca0b0;
+  --border: #ccd0da;
+  --accent: #1e66f5;
+  --hover: rgba(76, 79, 105, 0.06);
+  --selection: rgba(30, 102, 245, 0.18);
+  --active-line: rgba(76, 79, 105, 0.04);
   color-scheme: light;
 }
 

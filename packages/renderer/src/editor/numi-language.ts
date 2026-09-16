@@ -4,20 +4,61 @@ import type { EditorView } from "@codemirror/view";
 
 // Default sets (used until dynamic data arrives from main process)
 let FUNCTIONS = new Set([
-  "sqrt", "cbrt", "abs", "ceil", "floor", "round", "trunc",
-  "sin", "cos", "tan", "asin", "acos", "atan",
-  "log", "ln", "log2", "log10", "exp", "sign",
-  "min", "max",
+  "sqrt",
+  "cbrt",
+  "abs",
+  "ceil",
+  "floor",
+  "round",
+  "trunc",
+  "sin",
+  "cos",
+  "tan",
+  "asin",
+  "acos",
+  "atan",
+  "log",
+  "ln",
+  "log2",
+  "log10",
+  "exp",
+  "sign",
+  "min",
+  "max",
 ]);
 
 let CONSTANTS = new Set(["pi", "e", "tau"]);
 
 let KEYWORDS = new Set([
-  "in", "to", "as", "of", "off", "on", "mod",
-  "AND", "OR", "XOR", "NOT",
-  "today", "now", "tomorrow", "yesterday",
-  "sum", "total", "avg", "average", "prev", "previous", "count",
-  "hex", "binary", "bin", "octal", "oct", "decimal", "dec",
+  "in",
+  "to",
+  "as",
+  "of",
+  "off",
+  "on",
+  "mod",
+  "AND",
+  "OR",
+  "XOR",
+  "NOT",
+  "today",
+  "now",
+  "tomorrow",
+  "yesterday",
+  "sum",
+  "total",
+  "avg",
+  "average",
+  "prev",
+  "previous",
+  "count",
+  "hex",
+  "binary",
+  "bin",
+  "octal",
+  "oct",
+  "decimal",
+  "dec",
 ]);
 
 interface IlumiState {
@@ -63,7 +104,7 @@ function createParser(): StreamParser<IlumiState> {
       // Words
       if (stream.match(/^[a-zA-Z_][a-zA-Z0-9_]*/)) {
         const word = stream.current();
-        if (FUNCTIONS.has(word)) return "function";
+        if (FUNCTIONS.has(word)) return "variableName.function";
         if (CONSTANTS.has(word)) return "atom";
         if (KEYWORDS.has(word)) return "keyword";
         return "variableName";
@@ -101,8 +142,17 @@ export function updateLanguageSets(
 
   // Merge dynamic entities into default keyword set
   const newKeywords = new Set([
-    "in", "to", "as", "of", "off", "on", "mod",
-    "AND", "OR", "XOR", "NOT",
+    "in",
+    "to",
+    "as",
+    "of",
+    "off",
+    "on",
+    "mod",
+    "AND",
+    "OR",
+    "XOR",
+    "NOT",
   ]);
   for (const e of entities) {
     if (e.type === "lineRef" || e.type === "dateLiteral" || e.type === "baseConversion") {
@@ -111,7 +161,11 @@ export function updateLanguageSets(
   }
 
   // Only reconfigure if sets actually changed
-  if (setsEqual(FUNCTIONS, newFunctions) && setsEqual(CONSTANTS, newConstants) && setsEqual(KEYWORDS, newKeywords)) {
+  if (
+    setsEqual(FUNCTIONS, newFunctions) &&
+    setsEqual(CONSTANTS, newConstants) &&
+    setsEqual(KEYWORDS, newKeywords)
+  ) {
     return;
   }
 
