@@ -41,6 +41,14 @@ describe("math functions", () => {
       expect(evalLine("round(4.4)")).toBe(4);
     });
 
+    it("should round to the given decimal places", () => {
+      expect(evalLine("round(10 / 3, 2)")).toBe(3.33);
+      expect(evalLine("round(1.005, 2)")).toBe(1.01);
+      expect(evalLine("round(2.5, 0)")).toBe(3);
+      expect(evalLine("round(1234.5678, -2)")).toBe(1200);
+      expect(evalLine("round(-1.234, 1)")).toBe(-1.2);
+    });
+
     it("should evaluate trunc", () => {
       expect(evalLine("trunc(4.9)")).toBe(4);
       expect(evalLine("trunc(-4.9)")).toBe(-4);

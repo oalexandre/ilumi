@@ -67,11 +67,28 @@ describe("date arithmetic", () => {
     expect(diff).toBeGreaterThan(300 * 86400000);
   });
 
-  it("tomorrow - today should produce a plain number (duration)", () => {
-    const results = evaluate("tomorrow - today");
-    expect(results[0]?.value).toBeCloseTo(86400000, -3);
-    // Should NOT be formatted as a date (weekday + month pattern)
-    expect(results[0]?.formatted).not.toMatch(/[A-Z][a-z]{2}, [A-Z][a-z]{2}/);
+  it("tomorrow - today is one day", () => {
+    const [result] = evaluate("tomorrow - today");
+    expect(result?.value).toBe(1);
+    expect(result?.formatted).toBe("1 days");
+  });
+
+  it("a date difference converts to other durations", () => {
+    expect(evaluate("today - tomorrow")[0]?.value).toBe(-1);
+    expect(evaluate("tomorrow - today in hours")[0]?.formatted).toBe("24 hr");
+    expect(evaluate("tomorrow - today in minutes")[0]?.value).toBe(1440);
+    expect(evaluate("(today + 2 weeks) - today in weeks")[0]?.value).toBe(2);
+    expect(evaluate("(today + 3 days) - today in seconds")[0]?.value).toBe(259200);
+  });
+
+  it("a date difference works in arithmetic and variables", () => {
+    const results = evaluate("trip = (today + 10 days) - today\ntrip * 2\ntrip in hours");
+    expect(results.map((r) => r.value)).toEqual([10, 20, 240]);
+  });
+
+  it("differences between instants keep fractions of a day", () => {
+    const [result] = evaluate("(now + 36 hours) - now");
+    expect(result?.value).toBe(1.5);
   });
 });
 

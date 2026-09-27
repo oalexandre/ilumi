@@ -113,4 +113,29 @@ describe("line references", () => {
       expect(results[1]?.value).toBe(50);
     });
   });
+
+  describe("dates", () => {
+    // A date's value is a timestamp in milliseconds; counting it would swamp every total.
+    it("should leave dates out of sum, avg and count", () => {
+      const doc = "10\ntoday + 2 weeks\n20\n";
+      expect(evaluate(`${doc}sum`)[3]?.value).toBe(30);
+      expect(evaluate(`${doc}avg`)[3]?.value).toBe(15);
+      expect(evaluate(`${doc}count`)[3]?.value).toBe(2);
+    });
+
+    it("should leave formatted dates out too", () => {
+      const results = evaluate("5\nnow in UTC\nsum");
+      expect(results[2]?.value).toBe(5);
+    });
+
+    it("should make prev skip back to the last number", () => {
+      const results = evaluate("7\ntomorrow\nprev * 2");
+      expect(results[2]?.value).toBe(14);
+    });
+
+    it("should still count base conversions, which are numbers", () => {
+      const results = evaluate("255 in hex\nsum");
+      expect(results[1]?.value).toBe(255);
+    });
+  });
 });

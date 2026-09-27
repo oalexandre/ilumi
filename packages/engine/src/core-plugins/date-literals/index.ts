@@ -7,10 +7,20 @@ export const dateLiteralsPlugin: PluginManifest = {
   name: "Date Literals",
   description: "Date keywords: today, now, tomorrow, yesterday",
   tests: [
-    { description: "today returns a timestamp > 0", input: "today", expected: Date.now(), tolerance: 60000 },
-    { description: "now returns a timestamp > 0", input: "now", expected: Date.now(), tolerance: 60000 },
-    { description: "tomorrow > today", input: "tomorrow - today", expected: MS_PER_DAY, tolerance: 1000 },
-    { description: "today - yesterday = 1 day", input: "today - yesterday", expected: MS_PER_DAY, tolerance: 1000 },
+    {
+      description: "today returns a timestamp > 0",
+      input: "today",
+      expected: Date.now(),
+      tolerance: 60000,
+    },
+    {
+      description: "now returns a timestamp > 0",
+      input: "now",
+      expected: Date.now(),
+      tolerance: 60000,
+    },
+    { description: "tomorrow - today = 1 day", input: "tomorrow - today", expected: 1 },
+    { description: "today - yesterday = 1 day", input: "today - yesterday", expected: 1 },
   ],
   dateLiterals: {
     today: { resolver: () => new Date(), detail: "current date" },
@@ -24,13 +34,15 @@ export const dateLiteralsPlugin: PluginManifest = {
       detail: "yesterday's date",
     },
   },
-  help: [{
-    title: "Dates",
-    description: "Date arithmetic with today, now, tomorrow, yesterday.",
-    examples: [
-      { input: "today", output: "current date" },
-      { input: "today + 2 weeks", output: "date" },
-      { input: "tomorrow - 1 day", output: "today's date" },
-    ],
-  }],
+  help: [
+    {
+      title: "Dates",
+      description: "Date arithmetic with today, now, tomorrow, yesterday.",
+      examples: [
+        { input: "today", output: "current date" },
+        { input: "today + 2 weeks", output: "date" },
+        { input: "tomorrow - 1 day", output: "today's date" },
+      ],
+    },
+  ],
 };

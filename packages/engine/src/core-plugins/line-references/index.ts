@@ -52,6 +52,7 @@ export const lineReferencesPlugin: PluginManifest = {
     { description: "prev skips empty lines", input: "42\n\nprev", line: 2, expected: 42 },
     { description: "count of valued lines", input: "10\n20\n30\ncount", line: 3, expected: 3 },
     { description: "count skips comments", input: "10\n// note\n20\ncount", line: 3, expected: 2 },
+    { description: "sum skips dates", input: "10\ntoday\n20\nsum", line: 3, expected: 30 },
   ],
   lineRefs: {
     sum: { handler: sumHandler, detail: "sum of lines above" },

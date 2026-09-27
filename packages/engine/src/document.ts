@@ -15,6 +15,16 @@ import type { LineResult } from "./index.js";
 /** Base conversions and timezone formatters use the __fmt__ prefix. */
 const FMT_PREFIX = "__fmt__";
 
+/**
+ * Parser and evaluator recurse once per operator, so a line with a couple of thousand terms
+ * runs out of stack. Report that plainly instead of V8's message or a misleading syntax error.
+ */
+const TOO_LONG_ERROR = "Expression too long";
+
+function isStackOverflow(err: unknown): boolean {
+  return err instanceof RangeError && /call stack/i.test(err.message);
+}
+
 interface LineState {
   source: string;
   ast: ASTNode | null;
@@ -173,6 +183,9 @@ export class Document {
   /** Rebuild parse options from EntityRegistry (call after plugins are loaded). */
   refreshParseOptions(): void {
     this.rebuildParseOptions();
+    // Cached ASTs were parsed with the old vocabulary ("5 zorbs" was a syntax error before
+    // the plugin defining zorbs loaded): forget them so the next update() reparses every line.
+    this.lines = [];
   }
 
   private rebuildParseOptions(): void {
@@ -193,19 +206,14 @@ export class Document {
   }
 
   update(source: string): LineResult[] {
-    const newLines = source.split("\n");
+    // Windows line endings arrive when text is pasted from other apps.
+    const newLines = source.split(/\r?\n/);
     const dirty = new Set<number>();
 
     for (let i = 0; i < newLines.length; i++) {
       const newSource = newLines[i] ?? "";
       const existing = this.lines[i];
       if (!existing || existing.source !== newSource) {
-        dirty.add(i);
-      }
-    }
-
-    if (newLines.length !== this.lines.length) {
-      for (let i = newLines.length; i < this.lines.length; i++) {
         dirty.add(i);
       }
     }
@@ -223,7 +231,7 @@ export class Document {
           defines: ast.type === "assignment" ? ast.name : undefined,
           references: collectVariableRefs(ast),
         };
-      } catch {
+      } catch (err) {
         this.lines[i] = {
           source: src,
           ast: null,
@@ -231,7 +239,7 @@ export class Document {
             line: i,
             value: null,
             formatted: "",
-            error: "Syntax error",
+            error: isStackOverflow(err) ? TOO_LONG_ERROR : "Syntax error",
             errorKind: "syntax",
           },
           references: new Set(),
@@ -298,10 +306,19 @@ export class Document {
           formatted,
           ...(warning ? { warning } : {}),
         };
+        // Dates are timestamps in milliseconds: adding them to sum/avg/count/prev gives
+        // nonsense like 1,790,523,956,625, so line references skip them.
+        const isDate = result.unit === "__date__" || result.isDate === true;
         previousResults[i] =
-          result.value !== null ? { value: result.value, isPercent: result.isPercent } : null;
+          result.value !== null && !isDate
+            ? { value: result.value, isPercent: result.isPercent }
+            : null;
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Unknown error";
+        const message = isStackOverflow(err)
+          ? TOO_LONG_ERROR
+          : err instanceof Error
+            ? err.message
+            : "Unknown error";
         line.result = {
           line: i,
           value: null,

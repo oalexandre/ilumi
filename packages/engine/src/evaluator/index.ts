@@ -16,6 +16,8 @@ export interface EvalResult {
   value: number | null;
   unit?: string;
   isPercent?: boolean;
+  /** The value is a timestamp, even when shown through a formatter ("now in UTC"). */
+  isDate?: boolean;
 }
 
 export interface EvalOptions {
@@ -65,7 +67,11 @@ export function evaluateNodeFull(
         const inner = evaluateNodeFull(node.value, context, options);
         if (inner.value === null) throw new EvalError("Cannot convert empty value");
         const formatted = baseFormatter(inner.value);
-        return { value: inner.value, unit: `__fmt__${formatted}` };
+        return {
+          value: inner.value,
+          unit: `__fmt__${formatted}`,
+          ...(inner.unit === "__date__" || inner.isDate ? { isDate: true } : {}),
+        };
       }
 
       // Unit conversion
@@ -193,6 +199,8 @@ export function evaluateNodeFull(
   }
 }
 
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
 /** A real unit phrase: not a date marker and not a base-conversion formatter. */
 function plainUnit(unit: string | undefined): string | undefined {
   if (!unit || unit === "__date__" || unit.startsWith("__fmt__")) return undefined;
@@ -274,7 +282,12 @@ function evaluateBinary(
     if (op === "-" && leftIsDate && !rightIsDate) {
       return { value: l - r, unit: "__date__" };
     }
-    // date - date = plain number (duration in ms)
+    // date - date = a duration in days, which "in hours", "in weeks", etc. can convert.
+    // Rounded to the second: each date keyword reads the clock separately, and a millisecond
+    // between "today" and "tomorrow" would otherwise show as 1.0000000116 days.
+    if (op === "-" && leftIsDate && rightIsDate) {
+      return { value: (Math.round((l - r) / 1000) * 1000) / MS_PER_DAY, unit: "days" };
+    }
   }
 
   const leftUnit = plainUnit(leftResult.unit);
@@ -291,7 +304,9 @@ function evaluateBinary(
         try {
           r = unitReg.convert(r, from.id, to.id);
         } catch {
-          throw new EvalError(`Cannot ${op === "+" ? "add" : "subtract"} "${rightUnit}" and "${leftUnit}"`);
+          throw new EvalError(
+            `Cannot ${op === "+" ? "add" : "subtract"} "${rightUnit}" and "${leftUnit}"`,
+          );
         }
       }
       unit = leftUnit;

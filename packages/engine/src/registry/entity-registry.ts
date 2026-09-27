@@ -202,16 +202,18 @@ export class EntityRegistry {
       // Show if: category matches context, or no category (universal)
       if (cat === contextCategory || (!cat && !isDate)) {
         const lowerName = name.toLowerCase();
-        if (!seen.has(lowerName)) {
+        // Prefer original-case (UTC not utc). Only a listed entry marks the name as seen,
+        // otherwise a skipped "utc" registered first would also hide "UTC".
+        if (
+          !seen.has(lowerName) &&
+          (name !== lowerName || !this.baseConversions.has(name.toUpperCase()))
+        ) {
           seen.add(lowerName);
-          // Prefer original-case (UTC not utc)
-          if (name !== lowerName || !this.baseConversions.has(name.toUpperCase())) {
-            results.push({
-              name,
-              type: "baseConversion",
-              detail: this.baseConversionDetails.get(name),
-            });
-          }
+          results.push({
+            name,
+            type: "baseConversion",
+            detail: this.baseConversionDetails.get(name),
+          });
         }
       }
     }

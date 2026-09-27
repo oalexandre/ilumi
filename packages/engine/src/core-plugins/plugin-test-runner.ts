@@ -93,6 +93,8 @@ export function runPluginTests(
 
 function resolveLineIndex(line: number | undefined, total: number): number {
   if (line === undefined) return 0;
-  if (line < 0) return Math.max(0, total + line);
+  // Past the first line stays negative, so the caller reports "No result" instead of
+  // silently checking line 0.
+  if (line < 0) return total + line;
   return line;
 }
