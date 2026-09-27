@@ -1,7 +1,7 @@
 # Roadmap
 
 Ideias de evolução do Ilumi, organizadas por retorno pelo esforço. Este documento
-é uma lista de sugestões, não um compromisso. Atualizado em 2026-09-16.
+é uma lista de sugestões, não um compromisso. Atualizado em 2026-09-27.
 
 Legenda: ✅ feito · 🔨 em andamento · 💡 sugerido
 
@@ -65,6 +65,29 @@ app antes do painel existir vê tudo desde a 0.2.1.
 Na primeira instalação a nota inicial é um tour: lista de compras com `sum`,
 variáveis, porcentagens, unidades, datas, bases e funções. Toda linha avalia sem
 erro. Notas criadas depois continuam vazias.
+
+### ✅ Quebra de linha com alinhamento
+
+O editor faz wrap das linhas longas em vez de rolar para a direita. A cada
+mudança de altura (edição, medição do CodeMirror ou redimensionamento da janela)
+o editor reporta a altura de cada linha pelo mapa de alturas do próprio
+CodeMirror, e o painel de resultados aplica a mesma altura na linha
+correspondente. O resultado fica na primeira linha visual; um valor mais largo
+que o painel é cortado com reticências e mostrado completo no hover.
+
+### ✅ Suíte de testes revisada
+
+- Testes unitários do renderer (hooks, componentes, autocomplete, tokenizer) com
+  jsdom e Testing Library, e do processo principal (configurações, notas,
+  novidades, atualizador).
+- Testes de desempenho do engine com expressões complexas e documentos grandes,
+  e um e2e de responsividade com uma nota de 1000 linhas.
+- E2E no CI num runner macOS, com relatório do Playwright anexado quando falha.
+- Cobertura com `pnpm test:coverage`.
+- O parser gerado é formatado no build (`pnpm build:parser`) e o CI falha se ele
+  divergir da gramática.
+- Os e2e rodam sempre sobre uma pasta de dados temporária e offline; as
+  verificações do engine via IPC viraram uma tabela única (`e2e/ipc.e2e.ts`).
 
 ## Sugeridas: produto
 
@@ -141,13 +164,6 @@ código; pode ser gerado a partir dos artefatos da release.
 
 ## Experiência de uso
 
-### 💡 Quebra de linha com alinhamento
-
-O editor não faz wrap e o painel de resultados alinha por altura fixa (mesmo
-`line-height` e padding nos dois lados). Uma linha longa some para a direita.
-Ativar wrap exige medir a altura de cada linha do CodeMirror e aplicar ao
-resultado correspondente. É a mudança de layout mais importante pendente.
-
 ### 💡 Copiar resultado no hover
 
 `Cmd+Shift+C` existe no menu, mas pouca gente descobre. Um ícone de copiar no
@@ -175,27 +191,18 @@ versão por idioma.
 
 ## Qualidade e manutenção
 
-### 💡 E2E no CI
+### 💡 Metas de cobertura
 
-O workflow de CI roda lint, typecheck e testes unitários, mas não os testes e2e.
-Como rodam em Electron, precisam de `xvfb-run` no Ubuntu. Evita regressão de UI
-em cada PR.
-
-### 💡 Testes de componente do renderer
-
-Não existe nenhum. Vitest com jsdom e Testing Library cobriria o painel de
-resultados e o de configurações sem subir o Electron.
+`pnpm test:coverage` mede a cobertura e o CI já roda com ela, mas sem mínimo.
+Depois de uns ciclos com os números estáveis, vale fixar `thresholds` no
+`vitest.config.ts` para impedir que caiam.
 
 ### Pendências menores
 
-- `pnpm build` regenera `arithmetic-parser.js` com formatação diferente da
-  commitada. Vale fixar a versão do Peggy ou rodar o Prettier no arquivo gerado
-  como parte do build.
 - Há 28 arquivos fora do padrão do Prettier no repositório. Um `pnpm format`
   único resolve, de preferência num commit isolado.
 
 ## Ordem sugerida
 
-Por impacto para o usuário final: assinatura no macOS, quebra de linha com
-alinhamento. Depois, seções e subtotais e o autocomplete já
-cobrem a maior parte do que falta no dia a dia.
+Por impacto para o usuário final: assinatura no macOS. Depois, seções e
+subtotais e o autocomplete já cobrem a maior parte do que falta no dia a dia.
