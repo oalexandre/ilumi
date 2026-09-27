@@ -10,6 +10,12 @@ bullets. Once the interface is translated, the same section must be written in
 `changelog.pt-BR.md` as well: the panel loads the file for the chosen language
 and falls back to this one. Keep both files in sync on every release.
 
+## 0.3.1 — 2026-09-27
+
+### Fixed
+
+- Pasting a long note no longer leaves the results out of line with their lines until you scroll.
+
 ## 0.3.0 — 2026-09-27
 
 ### Added
