@@ -44,7 +44,11 @@ export function loadSettings(): AppSettings {
   const path = getSettingsPath();
   try {
     if (existsSync(path)) {
-      return JSON.parse(readFileSync(path, "utf-8")) as AppSettings;
+      const parsed: unknown = JSON.parse(readFileSync(path, "utf-8"));
+      // Valid JSON that is not an object (null, 42, []) is as unusable as a corrupt file.
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        return parsed as AppSettings;
+      }
     }
   } catch {
     // Corrupted settings — return defaults

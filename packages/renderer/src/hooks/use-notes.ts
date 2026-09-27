@@ -20,7 +20,33 @@ export function useNotes(): {
 } {
   const [notes, setNotes] = useState<NoteData[]>([]);
   const [activeId, setActiveId] = useState("");
-  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // One pending save per note: switching notes must not cancel the previous note's save.
+  const pendingSavesRef = useRef(
+    new Map<string, { timer: ReturnType<typeof setTimeout>; note: NoteData }>(),
+  );
+
+  const cancelPendingSave = useCallback((id: string) => {
+    const pending = pendingSavesRef.current.get(id);
+    if (pending) clearTimeout(pending.timer);
+    pendingSavesRef.current.delete(id);
+  }, []);
+
+  // Write unsaved edits when the window closes or reloads.
+  useEffect(() => {
+    const pendingSaves = pendingSavesRef.current;
+    const flush = () => {
+      for (const { timer, note } of pendingSaves.values()) {
+        clearTimeout(timer);
+        window.numi.saveNote(note);
+      }
+      pendingSaves.clear();
+    };
+    window.addEventListener("beforeunload", flush);
+    return () => {
+      window.removeEventListener("beforeunload", flush);
+      flush();
+    };
+  }, []);
 
   useEffect(() => {
     window.numi.getNotes().then((loaded) => {
@@ -33,12 +59,17 @@ export function useNotes(): {
 
   const activeNote = notes.find((n) => n.id === activeId) ?? null;
 
-  const scheduleSave = useCallback((note: NoteData) => {
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    saveTimerRef.current = setTimeout(() => {
-      window.numi.saveNote(note);
-    }, AUTOSAVE_MS);
-  }, []);
+  const scheduleSave = useCallback(
+    (note: NoteData) => {
+      cancelPendingSave(note.id);
+      const timer = setTimeout(() => {
+        pendingSavesRef.current.delete(note.id);
+        window.numi.saveNote(note);
+      }, AUTOSAVE_MS);
+      pendingSavesRef.current.set(note.id, { timer, note });
+    },
+    [cancelPendingSave],
+  );
 
   const updateContent = useCallback(
     (content: string) => {
@@ -65,6 +96,8 @@ export function useNotes(): {
 
   const closeNote = useCallback(
     (id: string) => {
+      // A save still pending would recreate the file after the delete.
+      cancelPendingSave(id);
       window.numi.deleteNote(id);
       setNotes((prev) => {
         const remaining = prev.filter((n) => n.id !== id);
@@ -74,21 +107,35 @@ export function useNotes(): {
         return remaining;
       });
     },
-    [activeId],
+    [activeId, cancelPendingSave],
   );
 
-  const renameNote = useCallback((id: string, title: string) => {
-    setNotes((prev) =>
-      prev.map((n) => {
-        if (n.id === id) {
-          const updated = { ...n, title };
-          window.numi.saveNote(updated);
-          return updated;
-        }
-        return n;
-      }),
-    );
-  }, []);
+  // Latest notes for callbacks that must save outside a state updater (StrictMode runs
+  // updaters twice, which would save twice).
+  const notesRef = useRef(notes);
+  notesRef.current = notes;
 
-  return { notes, activeNote, activeId, setActiveId, updateContent, createNote, closeNote, renameNote };
+  const renameNote = useCallback(
+    (id: string, title: string) => {
+      // A pending save holds the newest content; it is dropped so it can't overwrite the rename.
+      const latest =
+        pendingSavesRef.current.get(id)?.note ?? notesRef.current.find((n) => n.id === id);
+      if (!latest) return;
+      cancelPendingSave(id);
+      window.numi.saveNote({ ...latest, title });
+      setNotes((prev) => prev.map((n) => (n.id === id ? { ...n, title } : n)));
+    },
+    [cancelPendingSave],
+  );
+
+  return {
+    notes,
+    activeNote,
+    activeId,
+    setActiveId,
+    updateContent,
+    createNote,
+    closeNote,
+    renameNote,
+  };
 }
