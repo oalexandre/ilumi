@@ -149,4 +149,132 @@ describe("UnitRegistry", () => {
       expect(registry.convert(212, "fahrenheit", "celsius")).toBeCloseTo(100);
     });
   });
+
+  describe("getCompatiblePhrases", () => {
+    beforeEach(() => {
+      registry.addUnit({
+        id: "meter",
+        phrases: "meter, meters, m",
+        baseUnitId: "meter",
+        format: "m",
+        ratio: 1,
+      });
+      registry.addUnit({
+        id: "kilometer",
+        phrases: " kilometer , km",
+        baseUnitId: "meter",
+        format: "km",
+        ratio: 1000,
+      });
+      // Defined relative to a non-base unit: still resolves to the meter dimension.
+      registry.addUnit({
+        id: "league",
+        phrases: "league",
+        baseUnitId: "kilometer",
+        format: "lea",
+        ratio: 4.8,
+      });
+      registry.addUnit({
+        id: "gram",
+        phrases: "gram, g",
+        baseUnitId: "gram",
+        format: "g",
+        ratio: 1,
+      });
+      registry.addUnit({
+        id: "orphan",
+        phrases: "orphan",
+        baseUnitId: "ghost",
+        format: "o",
+        ratio: 1,
+      });
+      registry.addUnit({
+        id: "orphan2",
+        phrases: "orphan two",
+        baseUnitId: "ghost",
+        format: "o2",
+        ratio: 2,
+      });
+    });
+
+    it("returns the primary phrase of every other unit in the same dimension", () => {
+      expect(registry.getCompatiblePhrases("m")).toEqual(["kilometer", "league"]);
+      expect(registry.getCompatiblePhrases("KM")).toEqual(["meter", "league"]);
+      expect(registry.getCompatiblePhrases("league")).toEqual(["meter", "kilometer"]);
+    });
+
+    it("returns nothing for a dimension with a single unit or an unknown phrase", () => {
+      expect(registry.getCompatiblePhrases("g")).toEqual([]);
+      expect(registry.getCompatiblePhrases("furlong")).toEqual([]);
+    });
+
+    it("groups units whose base unit is not registered by the base id", () => {
+      expect(registry.getCompatiblePhrases("orphan")).toEqual(["orphan two"]);
+    });
+  });
+
+  describe("getAllUnits / getAllPhrases", () => {
+    it("returns every definition in insertion order, replacing redefinitions by id", () => {
+      const meter = {
+        id: "meter",
+        phrases: "meter, m",
+        baseUnitId: "meter",
+        format: "m",
+        ratio: 1,
+      };
+      const gram = { id: "gram", phrases: "gram", baseUnitId: "gram", format: "g", ratio: 1 };
+      const meter2 = { ...meter, format: "metre" };
+      registry.addUnit(meter);
+      registry.addUnit(gram);
+      registry.addUnit(meter2);
+
+      expect(registry.getAllUnits()).toEqual([meter2, gram]);
+      expect(registry.getById("meter")?.format).toBe("metre");
+      expect(registry.getById("nope")).toBeUndefined();
+    });
+
+    it("indexes trimmed lowercase phrases plus the lowercased id", () => {
+      registry.addUnit({
+        id: "KiloByte",
+        phrases: " KB , , kilobyte",
+        baseUnitId: "byte",
+        format: "KB",
+        ratio: 1000,
+      });
+
+      expect(registry.getAllPhrases()).toEqual(["kb", "kilobyte"]);
+      expect(registry.hasPhrase("KB")).toBe(true);
+      expect(registry.hasPhrase("")).toBe(false);
+      expect(registry.findByPhrase("KILOBYTE")?.id).toBe("KiloByte");
+    });
+
+    it("is empty for a fresh registry", () => {
+      expect(registry.getAllUnits()).toEqual([]);
+      expect(registry.getAllPhrases()).toEqual([]);
+    });
+  });
+
+  describe("convert errors", () => {
+    beforeEach(() => {
+      registry.addUnit({
+        id: "meter",
+        phrases: "meter",
+        baseUnitId: "meter",
+        format: "m",
+        ratio: 1,
+      });
+      registry.addUnit({ id: "gram", phrases: "gram", baseUnitId: "gram", format: "g", ratio: 1 });
+    });
+
+    it("rejects unknown unit ids", () => {
+      expect(() => registry.convert(1, "parsec", "meter")).toThrow('Unknown unit "parsec"');
+      expect(() => registry.convert(1, "meter", "parsec")).toThrow('Unknown unit "parsec"');
+    });
+
+    it("rejects conversions across dimensions", () => {
+      expect(() => registry.convert(1, "meter", "gram")).toThrow(
+        'Cannot convert between "m" and "g" (incompatible units)',
+      );
+    });
+  });
 });

@@ -33,7 +33,7 @@ const CODE_TO_KEY: Record<string, string> = {
 };
 
 /** Build an Electron accelerator from a key event, or null if it can't be a global shortcut. */
-function acceleratorFromEvent(e: KeyboardEvent | React.KeyboardEvent): string | null {
+export function acceleratorFromEvent(e: KeyboardEvent | React.KeyboardEvent): string | null {
   const modifiers: string[] = [];
   if (e.metaKey) modifiers.push(IS_MAC ? "Command" : "Super");
   if (e.ctrlKey) modifiers.push("Control");

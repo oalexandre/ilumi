@@ -88,7 +88,7 @@ async function getConversionTargets(sourceWord: string): Promise<CompletionEntry
 const ASSIGNMENT_RE = /^\s*([a-zA-Z_]\w*)\s*=(?!=)/;
 
 /** Variables assigned on the lines above the cursor, in order of first definition. */
-function documentVariables(context: CompletionContext): CompletionEntry[] {
+export function documentVariables(context: CompletionContext): CompletionEntry[] {
   const { doc } = context.state;
   const currentLine = doc.lineAt(context.pos).number;
   const seen = new Set<string>();

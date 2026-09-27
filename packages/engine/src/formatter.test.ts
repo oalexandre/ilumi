@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-import { formatNumber, formatWithUnit } from "./formatter.js";
+import { formatDate, formatNumber, formatWithUnit } from "./formatter.js";
 
 describe("formatNumber", () => {
   it("should format integers", () => {
@@ -71,5 +71,44 @@ describe("formatNumber options", () => {
 
   it("passes options through formatWithUnit", () => {
     expect(formatWithUnit(1234.5, "km", { locale: "pt-BR" })).toBe("1.234,5 km");
+  });
+});
+
+describe("formatNumber maxDecimals clamping", () => {
+  it("treats a negative maxDecimals as 0", () => {
+    expect(formatNumber(3.7, { maxDecimals: -3 })).toBe("4");
+    expect(formatNumber(1234.5, { maxDecimals: -1 })).toBe("1,235");
+  });
+
+  it("never shows more than 10 decimals even when asked for more", () => {
+    expect(formatNumber(0.123456789012, { maxDecimals: 20 })).toBe("0.123456789");
+    expect(formatNumber(1 / 3, { maxDecimals: 50 })).toBe("0.3333333333");
+    expect(formatNumber(1 / 3)).toBe("0.3333333333");
+  });
+
+  it("does not pad when maxDecimals exceeds what the value needs", () => {
+    expect(formatNumber(1.5, { maxDecimals: 8 })).toBe("1.5");
+    expect(formatNumber(7, { maxDecimals: 10 })).toBe("7");
+  });
+
+  it("formats non-finite values regardless of options", () => {
+    expect(formatNumber(NaN, { maxDecimals: 2, locale: "pt-BR" })).toBe("NaN");
+    expect(formatNumber(-Infinity, { maxDecimals: -1 })).toBe("-Infinity");
+  });
+
+  it("drops an empty unit", () => {
+    expect(formatWithUnit(42, "")).toBe("42");
+  });
+});
+
+describe("formatDate", () => {
+  it("formats a local date as weekday, month, day and year in en-US", () => {
+    expect(formatDate(new Date(2026, 0, 5))).toBe("Mon, Jan 5, 2026");
+    expect(formatDate(new Date(2026, 6, 4, 23, 59))).toBe("Sat, Jul 4, 2026");
+    expect(formatDate(new Date(2024, 1, 29))).toBe("Thu, Feb 29, 2024");
+  });
+
+  it("ignores the time of day", () => {
+    expect(formatDate(new Date(2026, 8, 27, 0, 0))).toBe(formatDate(new Date(2026, 8, 27, 23, 59)));
   });
 });

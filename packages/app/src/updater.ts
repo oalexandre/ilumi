@@ -17,7 +17,7 @@ const MANUAL_INSTALL = process.platform === "darwin";
 const dismissed = new Set<string>();
 
 /** Direct link to the DMG for this machine, or the releases page when the file is unknown. */
-function downloadUrlFor(version: string, files: Array<{ url: string }>): string {
+export function downloadUrlFor(version: string, files: Array<{ url: string }>): string {
   const arch = process.arch === "arm64" ? "arm64" : "x64";
   const dmg = files.find((f) => f.url.endsWith(`-${arch}.dmg`));
   return dmg ? `${RELEASES_URL}/download/v${version}/${dmg.url}` : `${RELEASES_URL}/latest`;

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-import { compareVersions, parseChangelog, parseReleaseNotes } from "./release-notes.js";
+import { compareVersions, isSemver, parseChangelog, parseReleaseNotes } from "./release-notes.js";
 
 const CHANGELOG = `# Changelog
 
@@ -56,9 +56,9 @@ describe("parseChangelog", () => {
   });
 
   it("drops entries without items", () => {
-    expect(parseChangelog("## 1.0.0\n\n### Added\n\n## 0.9.0\n\n- x\n").map((e) => e.version)).toEqual([
-      "0.9.0",
-    ]);
+    expect(
+      parseChangelog("## 1.0.0\n\n### Added\n\n## 0.9.0\n\n- x\n").map((e) => e.version),
+    ).toEqual(["0.9.0"]);
   });
 });
 
@@ -67,5 +67,25 @@ describe("compareVersions", () => {
     expect(compareVersions("0.2.2", "0.2.10")).toBeLessThan(0);
     expect(compareVersions("1.0.0", "0.9.9")).toBeGreaterThan(0);
     expect(compareVersions("0.2.1", "0.2.1")).toBe(0);
+  });
+});
+
+describe("isSemver", () => {
+  it.each(["0.2.3", "1.0.0", "10.20.30"])("accepts %s", (version) => {
+    expect(isSemver(version)).toBe(true);
+  });
+
+  it.each([
+    "",
+    "Unreleased",
+    "1.0",
+    "1.0.0.0",
+    "v1.0.0",
+    "1.0.0-beta.1",
+    "1.0.0+build",
+    " 1.0.0",
+    "1.a.0",
+  ])("rejects %j", (version) => {
+    expect(isSemver(version)).toBe(false);
   });
 });
