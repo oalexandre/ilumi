@@ -10,6 +10,27 @@ bullets. Once the interface is translated, the same section must be written in
 `changelog.pt-BR.md` as well: the panel loads the file for the chosen language
 and falls back to this one. Keep both files in sync on every release.
 
+## 0.3.0 — 2026-09-27
+
+### Added
+
+- Long lines wrap instead of disappearing off the right edge, and every result stays aligned with its line. A result wider than the panel is shortened with "…"; hover it to see the full value.
+
+### Changed
+
+- Subtracting two dates gives a number of days (`tomorrow - today` is `1 days`), and you can convert it: `tomorrow - today in hours`, `in weeks`, `in minutes`. It used to show milliseconds.
+- `sum`, `avg`, `count` and `prev` skip lines that are dates, which used to add huge numbers to the total.
+
+### Fixed
+
+- Edits could be lost when switching to another note within a second of typing, or when quitting right after typing. A note closed right after typing could also come back on the next launch, and a rename could be undone.
+- `round(x, 2)` ignored the decimal places: `round(10 / 3, 2)` now gives `3.33`.
+- Text pasted with Windows line endings no longer shows "Syntax error" on every line.
+- Deleting lines no longer leaves empty result rows behind.
+- A line with thousands of terms shows "Expression too long" instead of an internal error.
+- Reopening the window from the Dock on macOS after it was closed no longer crashes the app.
+- A corrupted settings file no longer stops settings from being saved.
+
 ## 0.2.3 — 2026-09-16
 
 ### Fixed
