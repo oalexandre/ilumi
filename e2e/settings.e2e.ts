@@ -1,17 +1,13 @@
-import { test, expect, type Page, type Locator } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "@playwright/test";
 
-import { launchIsolatedApp, type IsolatedApp } from "./helpers";
+import { clearEditor, launchIsolatedApp, typeInEditor, type IsolatedApp } from "./helpers";
 
 let isolated: IsolatedApp;
 let page: Page;
-let editor: Locator;
-
-const SETTLE_MS = 200;
 
 test.beforeAll(async () => {
   isolated = await launchIsolatedApp();
   page = isolated.page;
-  editor = page.locator(".cm-content");
 });
 
 test.afterAll(async () => {
@@ -19,16 +15,10 @@ test.afterAll(async () => {
 });
 
 test.beforeEach(async () => {
-  await editor.focus();
-  await page.keyboard.press("Meta+a");
-  await page.keyboard.press("Backspace");
-  await page.waitForTimeout(SETTLE_MS);
+  await clearEditor(page);
 });
 
-async function type(text: string): Promise<void> {
-  await editor.pressSequentially(text, { delay: 10 });
-  await page.waitForTimeout(SETTLE_MS);
-}
+const type = (text: string) => typeInEditor(page, text);
 
 async function openSettings(): Promise<void> {
   await page.getByTestId("open-settings").click();
@@ -37,7 +27,7 @@ async function openSettings(): Promise<void> {
 
 async function closeSettings(): Promise<void> {
   await page.keyboard.press("Escape");
-  await page.waitForTimeout(SETTLE_MS);
+  await expect(page.getByText("Settings", { exact: true })).toBeHidden();
 }
 
 /** The rendered value of the result on the given 0-based line. */
@@ -130,12 +120,10 @@ test.describe("Settings", () => {
       .getByRole("switch")
       .last();
     await toggle.click();
-    await page.waitForTimeout(SETTLE_MS);
-    expect(await isOnTop()).toBe(true);
+    await expect.poll(isOnTop).toBe(true);
 
     await toggle.click();
-    await page.waitForTimeout(SETTLE_MS);
-    expect(await isOnTop()).toBe(false);
+    await expect.poll(isOnTop).toBe(false);
     await closeSettings();
   });
 
@@ -152,17 +140,15 @@ test.describe("Settings", () => {
     await expect(recorder).toHaveText(/Space/);
     // The "×" next to the recorder disables the shortcut.
     await recorder.locator("xpath=following-sibling::button").click();
-    await page.waitForTimeout(SETTLE_MS);
     await expect(recorder).toHaveText("None");
-    expect(await isRegistered("CommandOrControl+Alt+Space")).toBe(false);
+    await expect.poll(() => isRegistered("CommandOrControl+Alt+Space")).toBe(false);
 
     // Record a new one: click, then press the combination.
     await recorder.click();
     await expect(recorder).toHaveText("Press keys…");
     await page.keyboard.press("Control+Alt+K");
-    await page.waitForTimeout(SETTLE_MS);
     await expect(recorder).toHaveText(/K$/);
-    expect(await isRegistered("Control+Alt+K")).toBe(true);
+    await expect.poll(() => isRegistered("Control+Alt+K")).toBe(true);
     await closeSettings();
   });
 });
@@ -178,7 +164,6 @@ test.describe("Variable autocomplete", () => {
     await expect(popup).toBeVisible();
     await expect(popup.locator(".cm-completionLabel").first()).toHaveText("salary");
     await page.keyboard.press("Enter");
-    await page.waitForTimeout(SETTLE_MS);
     await expect(resultValue(2)).toHaveText("8,500");
   });
 
@@ -187,10 +172,11 @@ test.describe("Variable autocomplete", () => {
     await page.keyboard.press("Home");
     await page.keyboard.press("Enter");
     await page.keyboard.press("ArrowUp");
-    await type("bud");
+    await type("bu");
+    // Wait for the popup so the check below is not satisfied by a popup that never opened.
     const popup = page.locator(".cm-tooltip-autocomplete");
-    const labels = await popup.locator(".cm-completionLabel").allTextContents();
-    expect(labels).not.toContain("budget");
+    await expect(popup).toBeVisible();
+    await expect(popup.locator(".cm-completionLabel", { hasText: /^budget$/ })).toHaveCount(0);
     await page.keyboard.press("Escape");
   });
 });

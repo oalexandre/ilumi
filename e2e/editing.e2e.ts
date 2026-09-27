@@ -1,18 +1,19 @@
-import { test, expect, type Page, type Locator } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
-import { launchIsolatedApp, type IsolatedApp } from "./helpers";
+import {
+  SETTLE_MS,
+  clearEditor,
+  launchIsolatedApp,
+  typeInEditor,
+  type IsolatedApp,
+} from "./helpers";
 
 let isolated: IsolatedApp;
 let page: Page;
-let editor: Locator;
-
-// Longer than the 50 ms evaluation debounce in use-engine.ts
-const SETTLE_MS = 200;
 
 test.beforeAll(async () => {
   isolated = await launchIsolatedApp();
   page = isolated.page;
-  editor = page.locator(".cm-content");
 });
 
 test.afterAll(async () => {
@@ -20,20 +21,12 @@ test.afterAll(async () => {
 });
 
 test.beforeEach(async () => {
-  await editor.focus();
-  await page.keyboard.press("Meta+a");
-  await page.keyboard.press("Backspace");
-  await page.waitForTimeout(SETTLE_MS);
+  await clearEditor(page);
 });
 
-async function type(text: string): Promise<void> {
-  await editor.pressSequentially(text, { delay: 10 });
-  await page.waitForTimeout(SETTLE_MS);
-}
+const type = (text: string) => typeInEditor(page, text);
 
-async function lineCount(): Promise<number> {
-  return page.locator(".cm-line").count();
-}
+const lines = () => page.locator(".cm-line");
 
 const pending = () => page.getByTestId("result-pending");
 const error = () => page.getByTestId("result-error");
@@ -57,7 +50,7 @@ test.describe("Editing feedback", () => {
     await page.waitForTimeout(SETTLE_MS);
     await expect(error()).toHaveText("Syntax error");
     await expect(pending()).toHaveCount(0);
-    expect(await lineCount()).toBe(1);
+    await expect(lines()).toHaveCount(1);
   });
 
   test("a second Enter on the same syntax error goes through", async () => {
@@ -66,7 +59,7 @@ test.describe("Editing feedback", () => {
     await page.waitForTimeout(SETTLE_MS);
     await page.keyboard.press("Enter");
     await page.waitForTimeout(SETTLE_MS);
-    expect(await lineCount()).toBe(2);
+    await expect(lines()).toHaveCount(2);
     await expect(error()).toHaveText("Syntax error");
   });
 
@@ -74,7 +67,7 @@ test.describe("Editing feedback", () => {
     await type("a=1");
     await page.keyboard.press("Enter");
     await page.waitForTimeout(SETTLE_MS);
-    expect(await lineCount()).toBe(2);
+    await expect(lines()).toHaveCount(2);
     await expect(error()).toHaveCount(0);
     await expect(pending()).toHaveCount(0);
   });
@@ -83,7 +76,7 @@ test.describe("Editing feedback", () => {
     await type("1/0");
     await page.keyboard.press("Enter");
     await page.waitForTimeout(SETTLE_MS);
-    expect(await lineCount()).toBe(2);
+    await expect(lines()).toHaveCount(2);
     await expect(error()).toHaveText("Division by zero");
   });
 
