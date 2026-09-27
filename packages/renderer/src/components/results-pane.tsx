@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useLayoutEffect } from "react";
 import type { LineResult } from "@engine/index";
 
 import { ResultLine } from "./result-line";
@@ -23,11 +23,14 @@ export function ResultsPane({
 }: ResultsPaneProps): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  // Also re-apply when rows arrive or change height: when the editor scrolls before the
+  // results exist (pasting a long note jumps to its end), the pane is still too short to
+  // take the scroll position, and nothing else would move it once the rows render.
+  useLayoutEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = scrollTop;
     }
-  }, [scrollTop]);
+  }, [scrollTop, results, lineHeights]);
 
   return (
     <div
