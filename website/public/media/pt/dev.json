@@ -1,0 +1,29 @@
+{
+  "title": "Front-end",
+  "lines": [
+    {
+      "input": "24 px in rem",
+      "result": "1,5 rem"
+    },
+    {
+      "input": "1.5 rem in px",
+      "result": "24 px"
+    },
+    {
+      "input": "0xF0 OR 0x0F",
+      "result": "255"
+    },
+    {
+      "input": "255 in hex",
+      "result": "0xFF"
+    },
+    {
+      "input": "0b1010 << 2",
+      "result": "40"
+    },
+    {
+      "input": "1.5 GB in MB",
+      "result": "1.500 MB"
+    }
+  ]
+}

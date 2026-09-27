@@ -1,127 +1,103 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
-type OS = "mac" | "windows" | "linux" | "unknown";
+import type { Content } from "@/lib/content";
+import { BUILDS, PRIMARY_BUILD, RELEASES_URL, VERSION, type OS } from "@/lib/site";
 
-const BASE = "https://github.com/oalexandre/ilumi/releases/download/v0.2.3";
-const RELEASES = "https://github.com/oalexandre/ilumi/releases";
-
-const platforms: { os: OS; label: string; file: string; detail: string }[] = [
-  { os: "mac", label: "macOS", file: "Ilumi-0.2.3-arm64.dmg", detail: "Apple Silicon (.dmg)" },
-  { os: "mac", label: "macOS Intel", file: "Ilumi-0.2.3-x64.dmg", detail: "Intel (.dmg)" },
-  { os: "windows", label: "Windows", file: "Ilumi-Setup-0.2.3-x64.exe", detail: "64-bit (.exe)" },
-  { os: "windows", label: "Windows ARM", file: "Ilumi-Setup-0.2.3-arm64.exe", detail: "ARM (.exe)" },
-  { os: "linux", label: "Linux", file: "Ilumi_0.2.3_amd64.deb", detail: "x64 (.deb)" },
-  { os: "linux", label: "Linux ARM", file: "Ilumi_0.2.3_arm64.deb", detail: "ARM64 (.deb)" },
-  { os: "linux", label: "Linux AppImage", file: "Ilumi-0.2.3-x86_64.AppImage", detail: "x64 (.AppImage)" },
-  { os: "linux", label: "Linux AppImage ARM", file: "Ilumi-0.2.3-arm64.AppImage", detail: "ARM64 (.AppImage)" },
-];
-
-const primaryByOS: Record<OS, string> = {
-  mac: "Ilumi-0.2.3-arm64.dmg",
-  windows: "Ilumi-Setup-0.2.3-x64.exe",
-  linux: "Ilumi_0.2.3_amd64.deb",
-  unknown: "",
-};
-
-const osLabels: Record<OS, string> = {
-  mac: "macOS",
-  windows: "Windows",
-  linux: "Linux",
-  unknown: "",
-};
-
-function detectOS(): OS {
+function detectOS(): OS | null {
   const ua = navigator.userAgent;
   if (/Macintosh|Mac OS/i.test(ua)) return "mac";
   if (/Windows/i.test(ua)) return "windows";
-  if (/Linux/i.test(ua)) return "linux";
-  return "unknown";
+  if (/Linux/i.test(ua) && !/Android/i.test(ua)) return "linux";
+  return null;
 }
 
-export function DownloadButton() {
-  const [mounted, setMounted] = useState(false);
-  const [os, setOs] = useState<OS>("unknown");
+const OS_NAME: Record<OS, string> = { mac: "macOS", windows: "Windows", linux: "Linux" };
+
+interface DownloadButtonProps {
+  copy: Content["download"];
+  /** Show the note about opening the unsigned macOS build. */
+  showMacNote?: boolean;
+}
+
+export function DownloadButton({ copy, showMacNote = false }: DownloadButtonProps) {
+  const [os, setOs] = useState<OS | null>(null);
   const [open, setOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const menuId = useId();
 
-  useEffect(() => {
-    setOs(detectOS());
-    setMounted(true);
-  }, []);
+  useEffect(() => setOs(detectOS()), []);
 
-  // Close dropdown on outside click
   useEffect(() => {
     if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
+    const onPointer = (e: PointerEvent) => {
+      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
   }, [open]);
 
-  const primaryFile = primaryByOS[os];
-  const primaryUrl = primaryFile ? `${BASE}/${primaryFile}` : RELEASES;
-  const label = mounted && os !== "unknown" ? `Download for ${osLabels[os]}` : "Download";
+  // Before detection (and without JavaScript) the button leads to the releases page.
+  const primary = os ? PRIMARY_BUILD[os] : null;
 
   return (
-    <div className="hero-buttons">
-      <div className="dl-group" ref={dropdownRef}>
-        <a href={primaryUrl} className="dl-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-          {label}
-        </a>
-        <button
-          className="dl-dropdown-toggle"
-          onClick={() => setOpen(!open)}
-          aria-label="Other platforms"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points={open ? "18 15 12 9 6 15" : "6 9 12 15 18 9"} />
-          </svg>
-        </button>
+    <div className="download" ref={rootRef}>
+      <div className="download-row">
+        <div className="split">
+          <a href={primary?.url ?? RELEASES_URL} className="split-main">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 3v12M7 10l5 5 5-5M4 19h16" />
+            </svg>
+            {os ? copy.cta.replace("{os}", OS_NAME[os]) : copy.generic}
+          </a>
+          <button
+            type="button"
+            className="split-more"
+            aria-label={copy.otherPlatforms}
+            aria-expanded={open}
+            aria-controls={menuId}
+            onClick={() => setOpen((v) => !v)}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d={open ? "M6 15l6-6 6 6" : "M6 9l6 6 6-6"} />
+            </svg>
+          </button>
+        </div>
+        <p className="download-meta">
+          v{VERSION} · {copy.meta}
+        </p>
+      </div>
 
-        {open && (
-          <div className="dl-dropdown">
-            {platforms.map((p) => (
-              <a
-                key={p.file}
-                href={`${BASE}/${p.file}`}
-                className="dl-dropdown-item"
-                onClick={() => setOpen(false)}
-              >
-                <span className="dl-dropdown-label">{p.label}</span>
-                <span className="dl-dropdown-detail">{p.detail}</span>
+      {open && (
+        <ul className="platforms" id={menuId}>
+          {BUILDS.map((build) => (
+            <li key={build.url}>
+              <a href={build.url} onClick={() => setOpen(false)}>
+                <span>{build.label}</span>
+                <span className="platforms-detail">{build.detail}</span>
               </a>
-            ))}
-            <a href={RELEASES} className="dl-dropdown-item dl-dropdown-all" target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)}>
-              View all releases →
+            </li>
+          ))}
+          <li>
+            <a href={RELEASES_URL} className="platforms-all">
+              {copy.allReleases} →
             </a>
-          </div>
-        )}
-      </div>
+          </li>
+        </ul>
+      )}
 
-      <a href="https://donate.stripe.com/4gMdRb2RKb4vaNxdZ5aZi00" target="_blank" rel="noopener noreferrer" className="donate-btn">
-        <span style={{ color: "var(--accent)" }}>♥</span>
-        Donate
-      </a>
-
-      <div className="dl-meta">
-        v0.2.3 · <a href={RELEASES}>All platforms</a>
-      </div>
-
-      {mounted && os === "mac" && (
-        <p className="dl-note">
-          <strong>macOS:</strong> If you see &quot;cannot be opened&quot;, run{" "}
-          <code>xattr -cr /path/to/Ilumi.app</code> or go to{" "}
-          <em>System Settings → Privacy &amp; Security → Open Anyway</em>.
+      {showMacNote && os === "mac" && (
+        <p className="mac-note">
+          {copy.macNote.lead} <code>{copy.macNote.command}</code> {copy.macNote.or}{" "}
+          <em>{copy.macNote.settings}</em>.
         </p>
       )}
     </div>

@@ -1,0 +1,29 @@
+{
+  "title": "Lisbon trip",
+  "lines": [
+    {
+      "input": "flights = 2 * 480 EUR",
+      "result": "960 EUR"
+    },
+    {
+      "input": "hotel = 6 * 95 EUR",
+      "result": "570 EUR"
+    },
+    {
+      "input": "food = 6 * 40 EUR",
+      "result": "240 EUR"
+    },
+    {
+      "input": "trip = flights + hotel + food",
+      "result": "1,770 EUR"
+    },
+    {
+      "input": "trip in USD",
+      "result": "2,017.08 USD"
+    },
+    {
+      "input": "trip / 2",
+      "result": "885 EUR"
+    }
+  ]
+}

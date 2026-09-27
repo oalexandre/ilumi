@@ -1,0 +1,21 @@
+{
+  "title": "Lançamento",
+  "lines": [
+    {
+      "input": "prazo = today + 3 weeks",
+      "result": "Sun, Oct 18, 2026"
+    },
+    {
+      "input": "prazo - today in hours",
+      "result": "504 hr"
+    },
+    {
+      "input": "now in Tokyo",
+      "result": "Mon, Sep 28, 2026, 2:13 AM GMT+9"
+    },
+    {
+      "input": "now in Sao_Paulo",
+      "result": "Sun, Sep 27, 2026, 2:13 PM GMT-3"
+    }
+  ]
+}

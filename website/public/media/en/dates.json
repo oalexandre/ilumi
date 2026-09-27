@@ -1,0 +1,21 @@
+{
+  "title": "Release",
+  "lines": [
+    {
+      "input": "deadline = today + 3 weeks",
+      "result": "Sun, Oct 18, 2026"
+    },
+    {
+      "input": "deadline - today in hours",
+      "result": "504 hr"
+    },
+    {
+      "input": "now in Tokyo",
+      "result": "Mon, Sep 28, 2026, 2:12 AM GMT+9"
+    },
+    {
+      "input": "now in New_York",
+      "result": "Sun, Sep 27, 2026, 1:12 PM EDT"
+    }
+  ]
+}

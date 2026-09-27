@@ -1,0 +1,520 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-27T19:16:49.876Z",
+  "title": "Design System: Ilumi",
+  "extensions": {
+    "colorMeta": {
+      "night-violet": {
+        "role": "neutral",
+        "displayName": "Night Violet",
+        "canonical": "oklch(14% 0.015 290)",
+        "tonalRamp": [
+          "oklch(15% 0.015 290)",
+          "oklch(25% 0.015 290)",
+          "oklch(35% 0.015 290)",
+          "oklch(45% 0.015 290)",
+          "oklch(55% 0.015 290)",
+          "oklch(65% 0.015 290)",
+          "oklch(80% 0.015 290)",
+          "oklch(95% 0.015 290)"
+        ]
+      },
+      "night-raised": {
+        "role": "neutral",
+        "displayName": "Night Raised",
+        "canonical": "oklch(18% 0.022 290)",
+        "tonalRamp": [
+          "oklch(15% 0.022 290)",
+          "oklch(25% 0.022 290)",
+          "oklch(35% 0.022 290)",
+          "oklch(45% 0.022 290)",
+          "oklch(55% 0.022 290)",
+          "oklch(65% 0.022 290)",
+          "oklch(80% 0.022 290)",
+          "oklch(95% 0.022 290)"
+        ]
+      },
+      "night-code": {
+        "role": "neutral",
+        "displayName": "Night Code",
+        "canonical": "oklch(16% 0.02 290)",
+        "tonalRamp": [
+          "oklch(15% 0.02 290)",
+          "oklch(25% 0.02 290)",
+          "oklch(35% 0.02 290)",
+          "oklch(45% 0.02 290)",
+          "oklch(55% 0.02 290)",
+          "oklch(65% 0.02 290)",
+          "oklch(80% 0.02 290)",
+          "oklch(95% 0.02 290)"
+        ]
+      },
+      "app-window": {
+        "role": "neutral",
+        "displayName": "App Window",
+        "canonical": "oklch(24% 0.03 285)",
+        "tonalRamp": [
+          "oklch(15% 0.03 285)",
+          "oklch(25% 0.03 285)",
+          "oklch(35% 0.03 285)",
+          "oklch(45% 0.03 285)",
+          "oklch(55% 0.03 285)",
+          "oklch(65% 0.03 285)",
+          "oklch(80% 0.03 285)",
+          "oklch(95% 0.03 285)"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "oklch(24% 0.03 290)",
+        "tonalRamp": [
+          "oklch(15% 0.03 290)",
+          "oklch(25% 0.03 290)",
+          "oklch(35% 0.03 290)",
+          "oklch(45% 0.03 290)",
+          "oklch(55% 0.03 290)",
+          "oklch(65% 0.03 290)",
+          "oklch(80% 0.03 290)",
+          "oklch(95% 0.03 290)"
+        ]
+      },
+      "hairline-strong": {
+        "role": "neutral",
+        "displayName": "Hairline Strong",
+        "canonical": "oklch(30% 0.04 290)",
+        "tonalRamp": [
+          "oklch(15% 0.04 290)",
+          "oklch(25% 0.04 290)",
+          "oklch(35% 0.04 290)",
+          "oklch(45% 0.04 290)",
+          "oklch(55% 0.04 290)",
+          "oklch(65% 0.04 290)",
+          "oklch(80% 0.04 290)",
+          "oklch(95% 0.04 290)"
+        ]
+      },
+      "gold-rule": {
+        "role": "primary",
+        "displayName": "Gold Rule",
+        "canonical": "rgba(240, 184, 0, 0.2)",
+        "tonalRamp": [
+          "oklch(15% 0.17 85)",
+          "oklch(25% 0.17 85)",
+          "oklch(35% 0.17 85)",
+          "oklch(45% 0.17 85)",
+          "oklch(55% 0.17 85)",
+          "oklch(65% 0.17 85)",
+          "oklch(80% 0.17 85)",
+          "oklch(95% 0.17 85)"
+        ]
+      },
+      "lamp-gold": {
+        "role": "primary",
+        "displayName": "Lamp Gold",
+        "canonical": "oklch(81% 0.17 85)",
+        "tonalRamp": [
+          "oklch(15% 0.17 85)",
+          "oklch(25% 0.17 85)",
+          "oklch(35% 0.17 85)",
+          "oklch(45% 0.17 85)",
+          "oklch(55% 0.17 85)",
+          "oklch(65% 0.17 85)",
+          "oklch(80% 0.17 85)",
+          "oklch(95% 0.17 85)"
+        ]
+      },
+      "lamp-gold-soft": {
+        "role": "primary",
+        "displayName": "Soft Lamp",
+        "canonical": "oklch(91% 0.15 95)",
+        "tonalRamp": [
+          "oklch(15% 0.15 95)",
+          "oklch(25% 0.15 95)",
+          "oklch(35% 0.15 95)",
+          "oklch(45% 0.15 95)",
+          "oklch(55% 0.15 95)",
+          "oklch(65% 0.15 95)",
+          "oklch(80% 0.15 95)",
+          "oklch(95% 0.15 95)"
+        ]
+      },
+      "gold-wash": {
+        "role": "primary",
+        "displayName": "Gold Wash",
+        "canonical": "rgba(240, 184, 0, 0.1)",
+        "tonalRamp": [
+          "oklch(15% 0.17 85)",
+          "oklch(25% 0.17 85)",
+          "oklch(35% 0.17 85)",
+          "oklch(45% 0.17 85)",
+          "oklch(55% 0.17 85)",
+          "oklch(65% 0.17 85)",
+          "oklch(80% 0.17 85)",
+          "oklch(95% 0.17 85)"
+        ]
+      },
+      "paper-text": {
+        "role": "neutral",
+        "displayName": "Paper Text",
+        "canonical": "oklch(93% 0.015 295)",
+        "tonalRamp": [
+          "oklch(15% 0.015 295)",
+          "oklch(25% 0.015 295)",
+          "oklch(35% 0.015 295)",
+          "oklch(45% 0.015 295)",
+          "oklch(55% 0.015 295)",
+          "oklch(65% 0.015 295)",
+          "oklch(80% 0.015 295)",
+          "oklch(95% 0.015 295)"
+        ]
+      },
+      "lilac-secondary": {
+        "role": "neutral",
+        "displayName": "Lilac Secondary",
+        "canonical": "oklch(71% 0.04 295)",
+        "tonalRamp": [
+          "oklch(15% 0.04 295)",
+          "oklch(25% 0.04 295)",
+          "oklch(35% 0.04 295)",
+          "oklch(45% 0.04 295)",
+          "oklch(55% 0.04 295)",
+          "oklch(65% 0.04 295)",
+          "oklch(80% 0.04 295)",
+          "oklch(95% 0.04 295)"
+        ]
+      },
+      "lilac-muted": {
+        "role": "neutral",
+        "displayName": "Lilac Muted",
+        "canonical": "oklch(62% 0.045 295)",
+        "tonalRamp": [
+          "oklch(15% 0.045 295)",
+          "oklch(25% 0.045 295)",
+          "oklch(35% 0.045 295)",
+          "oklch(45% 0.045 295)",
+          "oklch(55% 0.045 295)",
+          "oklch(65% 0.045 295)",
+          "oklch(80% 0.045 295)",
+          "oklch(95% 0.045 295)"
+        ]
+      },
+      "result-green": {
+        "role": "secondary",
+        "displayName": "Result Green",
+        "canonical": "oklch(86% 0.1 145)",
+        "tonalRamp": [
+          "oklch(15% 0.1 145)",
+          "oklch(25% 0.1 145)",
+          "oklch(35% 0.1 145)",
+          "oklch(45% 0.1 145)",
+          "oklch(55% 0.1 145)",
+          "oklch(65% 0.1 145)",
+          "oklch(80% 0.1 145)",
+          "oklch(95% 0.1 145)"
+        ]
+      },
+      "input-periwinkle": {
+        "role": "neutral",
+        "displayName": "Input Periwinkle",
+        "canonical": "oklch(87% 0.045 275)",
+        "tonalRamp": [
+          "oklch(15% 0.045 275)",
+          "oklch(25% 0.045 275)",
+          "oklch(35% 0.045 275)",
+          "oklch(45% 0.045 275)",
+          "oklch(55% 0.045 275)",
+          "oklch(65% 0.045 275)",
+          "oklch(80% 0.045 275)",
+          "oklch(95% 0.045 275)"
+        ]
+      },
+      "syntax-number": {
+        "role": "tertiary",
+        "displayName": "Syntax Number",
+        "canonical": "oklch(79% 0.09 220)",
+        "tonalRamp": [
+          "oklch(15% 0.09 220)",
+          "oklch(25% 0.09 220)",
+          "oklch(35% 0.09 220)",
+          "oklch(45% 0.09 220)",
+          "oklch(55% 0.09 220)",
+          "oklch(65% 0.09 220)",
+          "oklch(80% 0.09 220)",
+          "oklch(95% 0.09 220)"
+        ]
+      },
+      "syntax-variable": {
+        "role": "tertiary",
+        "displayName": "Syntax Variable",
+        "canonical": "oklch(86% 0.13 80)",
+        "tonalRamp": [
+          "oklch(15% 0.13 80)",
+          "oklch(25% 0.13 80)",
+          "oklch(35% 0.13 80)",
+          "oklch(45% 0.13 80)",
+          "oklch(55% 0.13 80)",
+          "oklch(65% 0.13 80)",
+          "oklch(80% 0.13 80)",
+          "oklch(95% 0.13 80)"
+        ]
+      },
+      "syntax-keyword": {
+        "role": "tertiary",
+        "displayName": "Syntax Keyword",
+        "canonical": "oklch(74% 0.13 310)",
+        "tonalRamp": [
+          "oklch(15% 0.13 310)",
+          "oklch(25% 0.13 310)",
+          "oklch(35% 0.13 310)",
+          "oklch(45% 0.13 310)",
+          "oklch(55% 0.13 310)",
+          "oklch(65% 0.13 310)",
+          "oklch(80% 0.13 310)",
+          "oklch(95% 0.13 310)"
+        ]
+      },
+      "syntax-function": {
+        "role": "tertiary",
+        "displayName": "Syntax Function",
+        "canonical": "oklch(74% 0.13 265)",
+        "tonalRamp": [
+          "oklch(15% 0.13 265)",
+          "oklch(25% 0.13 265)",
+          "oklch(35% 0.13 265)",
+          "oklch(45% 0.13 265)",
+          "oklch(55% 0.13 265)",
+          "oklch(65% 0.13 265)",
+          "oklch(80% 0.13 265)",
+          "oklch(95% 0.13 265)"
+        ]
+      },
+      "syntax-operator": {
+        "role": "tertiary",
+        "displayName": "Syntax Operator",
+        "canonical": "oklch(85% 0.1 215)",
+        "tonalRamp": [
+          "oklch(15% 0.1 215)",
+          "oklch(25% 0.1 215)",
+          "oklch(35% 0.1 215)",
+          "oklch(45% 0.1 215)",
+          "oklch(55% 0.1 215)",
+          "oklch(65% 0.1 215)",
+          "oklch(80% 0.1 215)",
+          "oklch(95% 0.1 215)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The hero promise; the closing call uses a smaller clamp(2.2rem, 1.4rem + 3vw, 3.6rem) at -0.034em."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Scene, toolkit and FAQ headings."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Toolkit item headings; FAQ questions at weight 600."
+      },
+      "body-lead": {
+        "displayName": "Lead",
+        "purpose": "Hero lead (1.125rem, 38ch); scene and toolkit leads use 1.0625rem."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Base text and FAQ answers (max 68ch)."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Captions, meta lines, footer; nav at 0.9375rem, toggle at 0.8125rem."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Typed math: transcripts, kbd, inline code; also the wordmark and language pill. Ligatures off."
+      }
+    },
+    "shadows": [
+      {
+        "name": "window",
+        "value": "0 0 0 1px rgba(255, 255, 255, 0.07), 0 24px 48px -16px rgba(0, 0, 0, 0.7)",
+        "purpose": "Every app window."
+      },
+      {
+        "name": "window-lit",
+        "value": "0 0 0 1px rgba(255, 255, 255, 0.07), 0 24px 48px -16px rgba(0, 0, 0, 0.7), 0 48px 96px -48px rgba(240, 184, 0, 0.22)",
+        "purpose": "The hero note only: one lit object per page."
+      },
+      {
+        "name": "gold-glow",
+        "value": "0 10px 24px -12px rgba(240, 184, 0, 0.55)",
+        "purpose": "Under the download button."
+      },
+      {
+        "name": "popover",
+        "value": "0 18px 40px -12px rgba(0, 0, 0, 0.8)",
+        "purpose": "The platform menu."
+      },
+      {
+        "name": "focus-ring",
+        "value": "outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px",
+        "purpose": "Global :focus-visible."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "All entrances and the FAQ mark rotation."
+      },
+      {
+        "name": "rise",
+        "value": "1.1s ease-out; from translateY(32px) scale(0.985) blur(8px)",
+        "purpose": "Hero window entrance."
+      },
+      {
+        "name": "drop",
+        "value": "0.22s ease-out; from opacity 0 translateY(-6px)",
+        "purpose": "Platform menu opening."
+      },
+      {
+        "name": "clip-fade",
+        "value": "opacity 0.3s",
+        "purpose": "Video fades in over its poster once a frame is ready."
+      },
+      {
+        "name": "state",
+        "value": "0.2s",
+        "purpose": "Colour, border and background hovers."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation: none; transition: none; scroll-behavior: auto",
+        "purpose": "Everything under prefers-reduced-motion: reduce; clips do not autoplay."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "narrow",
+        "value": "960px"
+      },
+      {
+        "name": "phone",
+        "value": "560px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Download Button",
+      "kind": "button",
+      "refersTo": "button-download",
+      "description": "Split gold CTA: OS-detected download plus a chevron that opens the platform menu.",
+      "html": "<div class=\"ds-split\"><a href=\"#\" class=\"ds-split-main\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 3v12M7 10l5 5 5-5M4 19h16\"/></svg>Download for macOS</a><button type=\"button\" class=\"ds-split-more\" aria-label=\"Other platforms\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 9l6 6 6-6\"/></svg></button></div>",
+      "css": ".ds-split{display:inline-flex;border-radius:12px;background:var(--accent,#f0b800);box-shadow:0 10px 24px -12px rgba(240,184,0,.55)}.ds-split-main,.ds-split-more{display:inline-flex;align-items:center;gap:10px;min-height:48px;color:var(--bg,#0b0a12);font:600 1rem/1 var(--sans,Inter,system-ui,sans-serif);text-decoration:none;background:none;border:0;cursor:pointer;transition:background .2s}.ds-split-main{padding:0 20px;border-radius:12px 0 0 12px}.ds-split-more{padding:0 14px;border-left:1px solid rgba(11,10,18,.22);border-radius:0 12px 12px 0}.ds-split-main:hover,.ds-split-more:hover{background:var(--accent-soft,#ffe066)}.ds-split-main:focus-visible,.ds-split-more:focus-visible{outline:2px solid var(--accent,#f0b800);outline-offset:3px}"
+    },
+    {
+      "name": "Platform Menu",
+      "kind": "custom",
+      "refersTo": "platform-menu",
+      "description": "Popover listing every build, opened from the download chevron.",
+      "html": "<ul class=\"ds-platforms\"><li><a href=\"#\"><span>macOS (Apple silicon)</span><span class=\"ds-detail\">.dmg</span></a></li><li><a href=\"#\"><span>Windows</span><span class=\"ds-detail\">.exe</span></a></li><li><a href=\"#\" class=\"ds-all\">All releases →</a></li></ul>",
+      "css": ".ds-platforms{width:340px;padding:6px;list-style:none;margin:0;border:1px solid var(--line-strong,#2c2a40);border-radius:12px;background:var(--bg-raised,#13121e);box-shadow:0 18px 40px -12px rgba(0,0,0,.8);font-family:var(--sans,Inter,system-ui,sans-serif);color:var(--text,#e9e7f3)}.ds-platforms a{display:flex;justify-content:space-between;gap:16px;padding:9px 12px;border-radius:8px;font-size:.9375rem;color:inherit;text-decoration:none}.ds-platforms a:hover,.ds-platforms a:focus-visible{background:var(--accent-wash,rgba(240,184,0,.1));outline:none}.ds-detail{color:var(--text-muted,#8784a0);font-size:.8125rem}.ds-all{color:var(--accent,#f0b800)!important}"
+    },
+    {
+      "name": "Transcript",
+      "kind": "custom",
+      "refersTo": "transcript",
+      "description": "A note's lines as text: highlighted mono input left, green result right, the moment in gold.",
+      "html": "<dl class=\"ds-transcript\"><div class=\"ds-row\"><dt><span class=\"ds-var\">hours</span> <span class=\"ds-op\">=</span> <span class=\"ds-num\">38</span></dt><dd>38</dd></div><div class=\"ds-row\"><dt><span class=\"ds-var\">rate</span> <span class=\"ds-op\">=</span> <span class=\"ds-num\">85</span></dt><dd>85</dd></div><div class=\"ds-row ds-moment\"><dt><span class=\"ds-var\">hours</span> <span class=\"ds-op\">*</span> <span class=\"ds-var\">rate</span> <span class=\"ds-kw\">in</span> <span class=\"ds-var\">EUR</span></dt><dd>3,230 EUR</dd></div></dl>",
+      "css": ".ds-transcript{margin:0;padding:6px 18px;border:1px solid var(--line,#1f1d2e);border-radius:12px;background:var(--bg-code,#0f0e19);font:.875rem/1.6 var(--mono,'JetBrains Mono',ui-monospace,monospace);font-variant-ligatures:none}.ds-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 16px;padding:7px 0;border-top:1px solid var(--line,#1f1d2e)}.ds-row:first-child{border-top:0}.ds-row dt{flex:1 1 auto;min-width:0;color:var(--input,#cdd6f4)}.ds-row dd{margin-left:auto;color:var(--result,#a6e3a1);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}.ds-moment dd{color:var(--accent,#f0b800);font-weight:700}.ds-num{color:#7ec8e3}.ds-var{color:#ffcb6b}.ds-kw{color:#c792ea}.ds-op{color:#89ddff}"
+    },
+    {
+      "name": "App Window",
+      "kind": "card",
+      "refersTo": "app-window",
+      "description": "Frame for a real app recording, caption hung below; the hero variant adds the gold under-light.",
+      "html": "<figure class=\"ds-window\"><div class=\"ds-screen\"></div><figcaption>Every line is a calculation; <code>sum</code> adds up the lines above it.</figcaption></figure>",
+      "css": ".ds-window{position:relative;margin:0 0 48px;width:420px;border-radius:14px;background:var(--app-bg,#1e1e2e);box-shadow:0 0 0 1px rgba(255,255,255,.07),0 24px 48px -16px rgba(0,0,0,.7),0 48px 96px -48px rgba(240,184,0,.22)}.ds-screen{aspect-ratio:1280/534;border-radius:14px}.ds-window figcaption{position:absolute;top:100%;padding:14px 4px 0;color:var(--text-muted,#8784a0);font:.875rem/1.6 var(--sans,Inter,system-ui,sans-serif)}.ds-window code{color:var(--accent,#f0b800);font:700 .95em var(--mono,'JetBrains Mono',monospace)}"
+    },
+    {
+      "name": "Pill Toggle",
+      "kind": "chip",
+      "refersTo": "pill-toggle",
+      "description": "Play/pause pill hung below a window's bottom-right corner.",
+      "html": "<button type=\"button\" class=\"ds-pill\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M7 4l13 8-13 8z\"/></svg>Play</button>",
+      "css": ".ds-pill{display:inline-flex;align-items:center;gap:7px;padding:5px 10px;border:1px solid var(--line-strong,#2c2a40);border-radius:999px;background:var(--bg,#0b0a12);color:var(--text-muted,#8784a0);font:500 .8125rem/1 var(--sans,Inter,system-ui,sans-serif);cursor:pointer;transition:color .2s,border-color .2s}.ds-pill:hover,.ds-pill:focus-visible{color:var(--text,#e9e7f3);border-color:var(--text-muted,#8784a0);outline:none}"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Logo, mono wordmark, quiet links, language pill.",
+      "html": "<header class=\"ds-header\"><a href=\"#\" class=\"ds-brand\"><span class=\"ds-wordmark\"><span class=\"ds-il\">il</span>umi</span></a><nav><a href=\"#\">Features</a><a href=\"#\">FAQ</a><a href=\"#\">GitHub</a><a href=\"#\" class=\"ds-lang\">PT</a></nav></header>",
+      "css": ".ds-header{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:20px 24px;background:var(--bg,#0b0a12)}.ds-brand{text-decoration:none}.ds-wordmark{font:700 1.25rem var(--mono,'JetBrains Mono',monospace);letter-spacing:-.02em;color:var(--text-secondary,#a19eb8)}.ds-il{color:var(--accent,#f0b800)}.ds-header nav{display:flex;align-items:center;gap:24px;font:.9375rem var(--sans,Inter,system-ui,sans-serif)}.ds-header nav a{color:var(--text-secondary,#a19eb8);text-decoration:none;transition:color .2s}.ds-header nav a:hover{color:var(--text,#e9e7f3)}.ds-header nav a:focus-visible{outline:2px solid var(--accent,#f0b800);outline-offset:3px;border-radius:6px}.ds-lang{padding:4px 10px;border:1px solid var(--line-strong,#2c2a40);border-radius:999px;font-family:var(--mono,'JetBrains Mono',monospace)!important;font-size:.8125rem}"
+    },
+    {
+      "name": "Key Cap",
+      "kind": "chip",
+      "refersTo": "kbd-key",
+      "description": "Keyboard shortcut keys in the toolkit.",
+      "html": "<p class=\"ds-keys\"><kbd>Cmd/Ctrl</kbd><kbd>Alt</kbd><kbd>Space</kbd></p>",
+      "css": ".ds-keys{display:flex;gap:6px;margin:0}.ds-keys kbd{padding:3px 9px;border:1px solid var(--line-strong,#2c2a40);border-bottom-width:2px;border-radius:7px;background:var(--bg-raised,#13121e);color:var(--text-secondary,#a19eb8);font:.8125rem var(--mono,'JetBrains Mono',monospace)}"
+    },
+    {
+      "name": "FAQ Disclosure",
+      "kind": "custom",
+      "description": "Native details with a gold plus that turns to minus.",
+      "html": "<details class=\"ds-faq\"><summary>Is Ilumi free?</summary><p>Yes. It is open source under the MIT license.</p></details>",
+      "css": ".ds-faq{border-top:1px solid var(--line,#1f1d2e);border-bottom:1px solid var(--line,#1f1d2e);color:var(--text,#e9e7f3);font-family:var(--sans,Inter,system-ui,sans-serif)}.ds-faq summary{position:relative;padding:20px 40px 20px 0;font-size:1.0625rem;font-weight:600;list-style:none;cursor:pointer}.ds-faq summary::-webkit-details-marker{display:none}.ds-faq summary::before,.ds-faq summary::after{content:'';position:absolute;right:6px;top:50%;width:14px;height:2px;border-radius:1px;background:var(--accent,#f0b800);transition:transform .3s cubic-bezier(.16,1,.3,1)}.ds-faq summary::after{transform:rotate(90deg)}.ds-faq[open] summary::after{transform:rotate(0)}.ds-faq summary:focus-visible{outline:2px solid var(--accent,#f0b800);outline-offset:3px}.ds-faq p{margin:0;padding:0 40px 24px 0;color:var(--text-secondary,#a19eb8)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Lit Note at Night",
+    "overview": "The site is a dark room with one lamp. The ground is a near-black with a violet cast, text is a soft lavender-white, and a single gold is the only warm thing on the page. Real recordings of the app sit in framed windows; everything around them is quiet Inter prose set left in a 12-column grid, alternating sides scene by scene, divided by faint gold hairlines.\n\nWhat the visitor types is always mono and always reads like the app: inputs in periwinkle with the app's syntax colours, results right-aligned in green, and the line the note builds toward (its \"moment\") in gold. Prose never borrows the mono face except the wordmark and the language pill; typed math never appears in Inter.\n\nDensity is generous: long bands (80 to 160px), short measures (38 to 46ch for leads), and no cards, tiles or icon grids. Depth comes from the app windows alone, and exactly one of them, the hero note, is lit from below in gold.",
+    "keyCharacteristics": [
+      "One accent, gold, rare by construction: CTA, wordmark \"il\", moment results, FAQ marks, focus ring, section rules.",
+      "Real app recordings in rounded windows are the only imagery.",
+      "Math is mono and mirrors the app's syntax theme; prose is Inter.",
+      "Split 5/7 grid rows that alternate sides; one column under 960px.",
+      "Hairline dividers instead of containers."
+    ],
+    "rules": [
+      {
+        "name": "The One Lamp Rule",
+        "body": "Gold is the only accent. It marks the action, the moment, and the seams; it never fills a surface larger than the download button.",
+        "section": "colors"
+      },
+      {
+        "name": "The Green Means Answered Rule",
+        "body": "Result green is reserved for computed results. Never use it for success states, badges or decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Typed Is Mono Rule",
+        "body": "Anything a user would type into Ilumi is JetBrains Mono with ligatures off; prose is Inter. Brand exceptions: the wordmark and the language pill.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Lit Object Rule",
+        "body": "Exactly one window per page gets the gold under-light: the first note the visitor sees.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** show typed math as a transcript or real clip, with results in Result Green and the moment in Lamp Gold.",
+      "**Do** keep scenes on the 5/7 split and alternate sides.",
+      "**Do** separate bands with the 1px Gold Rule and list items with Hairline.",
+      "**Do** give every clip a real poster, a pause toggle and a readable text transcript beside it.",
+      "**Do** keep the ground Night Violet and put depth only on app windows and popovers."
+    ],
+    "donts": [
+      "**Don't** add a second accent colour or use gold as a large surface fill.",
+      "**Don't** set prose in JetBrains Mono or typed math in Inter.",
+      "**Don't** use result green outside computed results.",
+      "**Don't** light more than one window with the gold under-light.",
+      "**Don't** replace recordings with illustrations, icon tiles or mock UI."
+    ]
+  }
+}

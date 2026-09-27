@@ -1,0 +1,29 @@
+{
+  "title": "Invoice",
+  "lines": [
+    {
+      "input": "hours = 38",
+      "result": "38"
+    },
+    {
+      "input": "rate = 85",
+      "result": "85"
+    },
+    {
+      "input": "subtotal = hours * rate",
+      "result": "3,230"
+    },
+    {
+      "input": "discount = 5%",
+      "result": "0.05"
+    },
+    {
+      "input": "subtotal - discount",
+      "result": "3,068.5"
+    },
+    {
+      "input": "tax = 15% of subtotal",
+      "result": "484.5"
+    }
+  ]
+}

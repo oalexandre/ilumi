@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "prebuild": "cp ../demo.gif public/demo.gif 2>/dev/null || true",
     "build": "next build",
     "start": "next start"
   },

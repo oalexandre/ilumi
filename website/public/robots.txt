@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://ilumi.oalexandre.com.br/sitemap.xml

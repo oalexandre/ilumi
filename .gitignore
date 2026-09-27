@@ -52,3 +52,9 @@ backlog/
 planoFaturamento/
 test-results/
 playwright-report/
+
+# Impeccable working files for the website (screenshots, decision payloads)
+website/.impeccable/review/
+website/.impeccable/*.json
+!website/.impeccable/design.json
+website/.impeccable/brief-body.md

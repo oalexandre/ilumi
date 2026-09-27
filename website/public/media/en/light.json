@@ -1,0 +1,29 @@
+{
+  "title": "Groceries",
+  "lines": [
+    {
+      "input": "// Weekly groceries",
+      "result": ""
+    },
+    {
+      "input": "coffee = 18.90",
+      "result": "18.9"
+    },
+    {
+      "input": "bread = 7.50",
+      "result": "7.5"
+    },
+    {
+      "input": "cheese = 32.40",
+      "result": "32.4"
+    },
+    {
+      "input": "milk = 5.20 * 2",
+      "result": "10.4"
+    },
+    {
+      "input": "sum",
+      "result": "69.2"
+    }
+  ]
+}

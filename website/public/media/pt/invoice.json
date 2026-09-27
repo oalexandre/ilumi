@@ -1,0 +1,29 @@
+{
+  "title": "Orçamento",
+  "lines": [
+    {
+      "input": "horas = 38",
+      "result": "38"
+    },
+    {
+      "input": "valor = 85",
+      "result": "85"
+    },
+    {
+      "input": "subtotal = horas * valor",
+      "result": "3.230"
+    },
+    {
+      "input": "desconto = 5%",
+      "result": "0,05"
+    },
+    {
+      "input": "subtotal - desconto",
+      "result": "3.068,5"
+    },
+    {
+      "input": "imposto = 15% of subtotal",
+      "result": "484,5"
+    }
+  ]
+}
