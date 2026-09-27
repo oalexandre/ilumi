@@ -36,6 +36,7 @@ export function App(): React.JSX.Element {
     renameNote,
   } = useNotes();
   const [scrollTop, setScrollTop] = useState(0);
+  const [lineHeights, setLineHeights] = useState<number[]>([]);
   const [showSettings, setShowSettings] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [whatsNew, setWhatsNew] = useState<ReleaseNotes[] | null>(null);
@@ -308,12 +309,14 @@ export function App(): React.JSX.Element {
           initialContent={initialContentRef.current}
           onChange={handleChange}
           onScroll={handleScroll}
+          onLineHeights={setLineHeights}
           onEditingLine={handleEditingLine}
           onEnter={handleEnter}
         />
         <ResultsPane
           results={results}
           scrollTop={scrollTop}
+          lineHeights={lineHeights}
           editingLine={editingLine}
           revealedLine={revealedLine}
         />

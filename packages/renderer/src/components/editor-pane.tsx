@@ -18,10 +18,26 @@ interface EditorPaneProps {
   theme: Theme;
   onChange: (text: string) => void;
   onScroll: (scrollTop: number) => void;
+  /** Called with the rendered height (px) of each document line whenever wrapping changes it. */
+  onLineHeights: (heights: number[]) => void;
   /** Called with the 0-based line the user is typing on, or null when they leave it (cursor move, blur). */
   onEditingLine: (line: number | null) => void;
   /** Called on Enter. Resolves true to block the newline (the line has an error to reveal). */
   onEnter: (line: number, text: string) => Promise<boolean>;
+}
+
+/** Height of every document line, as laid out by CodeMirror (wrapped lines are taller). */
+function lineHeights(view: EditorView): number[] {
+  const { doc } = view.state;
+  const heights = new Array<number>(doc.lines);
+  for (let i = 1; i <= doc.lines; i++) {
+    heights[i - 1] = view.lineBlockAt(doc.line(i).from).height;
+  }
+  return heights;
+}
+
+function sameHeights(a: number[], b: number[]): boolean {
+  return a.length === b.length && a.every((h, i) => Math.abs(h - (b[i] ?? 0)) < 0.5);
 }
 
 /** 0-based index of the line holding the main cursor, matching LineResult.line. */
@@ -34,6 +50,7 @@ export function EditorPane({
   theme,
   onChange,
   onScroll,
+  onLineHeights,
   onEditingLine,
   onEnter,
 }: EditorPaneProps): React.JSX.Element {
@@ -43,10 +60,12 @@ export function EditorPane({
   // Store callbacks in refs so the editor effect doesn't re-run
   const onChangeRef = useRef(onChange);
   const onScrollRef = useRef(onScroll);
+  const onLineHeightsRef = useRef(onLineHeights);
   const onEditingLineRef = useRef(onEditingLine);
   const onEnterRef = useRef(onEnter);
   onChangeRef.current = onChange;
   onScrollRef.current = onScroll;
+  onLineHeightsRef.current = onLineHeights;
   onEditingLineRef.current = onEditingLine;
   onEnterRef.current = onEnter;
   const themeRef = useRef(theme);
@@ -60,6 +79,14 @@ export function EditorPane({
   useEffect(() => {
     if (!containerRef.current) return;
 
+    let lastHeights: number[] = [];
+    const reportHeights = (view: EditorView) => {
+      const heights = lineHeights(view);
+      if (sameHeights(heights, lastHeights)) return;
+      lastHeights = heights;
+      onLineHeightsRef.current(heights);
+    };
+
     const state = EditorState.create({
       doc: initialContent,
       extensions: [
@@ -67,6 +94,7 @@ export function EditorPane({
         editorTheme(themeRef.current),
         numiAutocompletion,
         lineNumbers(),
+        EditorView.lineWrapping,
         history(),
         Prec.high(
           keymap.of([
@@ -98,6 +126,11 @@ export function EditorPane({
         ),
         keymap.of([...defaultKeymap, ...historyKeymap]),
         EditorView.updateListener.of((update) => {
+          // Heights settle after CodeMirror measures the DOM (heightChanged), and change with
+          // the window width (geometryChanged) since that moves the wrap points.
+          if (update.docChanged || update.heightChanged || update.geometryChanged) {
+            reportHeights(update.view);
+          }
           if (update.docChanged) {
             onChangeRef.current(update.state.doc.toString());
             onEditingLineRef.current(cursorLine(update.state));
@@ -123,6 +156,7 @@ export function EditorPane({
     });
 
     viewRef.current = view;
+    reportHeights(view);
 
     if (initialContent) {
       onChangeRef.current(initialContent);

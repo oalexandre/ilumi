@@ -69,6 +69,8 @@ function WarningBadge({ message }: { message: string }): React.JSX.Element {
 
 interface ResultLineProps {
   result: LineResult;
+  /** Height of the matching editor line; taller than one row when that line wraps. */
+  height?: number;
   /** The line is still being typed: show a pending indicator instead of its error. */
   pending?: boolean;
   /** The error was just revealed by a blocked Enter: animate it in. */
@@ -77,6 +79,7 @@ interface ResultLineProps {
 
 export function ResultLine({
   result,
+  height,
   pending = false,
   revealed = false,
 }: ResultLineProps): React.JSX.Element {
@@ -157,12 +160,13 @@ export function ResultLine({
       className="select-none"
       style={{
         lineHeight: "1.6",
-        minHeight: "1.6em",
+        height: height ?? "1.6em",
         textAlign: "right",
         paddingRight: "8px",
         cursor: result.formatted ? "pointer" : "default",
         position: "relative",
       }}
+      title={result.formatted ?? undefined}
       onClick={handleClick}
       onContextMenu={handleContextMenu}
     >
@@ -184,35 +188,39 @@ export function ResultLine({
           Copied!
         </span>
       )}
-      {result.error && pending ? (
-        <span className="result-pending" data-testid="result-pending" aria-label="pending">
-          <i />
-          <i />
-          <i />
-        </span>
-      ) : result.error ? (
-        <span
-          data-testid="result-error"
-          className={revealed ? "result-error-reveal" : undefined}
-          style={{ color: "var(--text-error)", fontSize: "12px", opacity: 0.7 }}
-        >
-          {result.error}
-        </span>
-      ) : (
-        <>
-          {result.warning && <WarningBadge message={result.warning} />}
-          <span
-            data-testid="result-value"
-            style={{
-              color: "var(--text-result)",
-              transition: "opacity 0.15s",
-            }}
-            className="hover:opacity-80"
-          >
-            {result.formatted}
+      {/* The result sits on the first row; a value wider than the pane is cut, not wrapped,
+          so it never spills into the next line's row. */}
+      <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+        {result.error && pending ? (
+          <span className="result-pending" data-testid="result-pending" aria-label="pending">
+            <i />
+            <i />
+            <i />
           </span>
-        </>
-      )}
+        ) : result.error ? (
+          <span
+            data-testid="result-error"
+            className={revealed ? "result-error-reveal" : undefined}
+            style={{ color: "var(--text-error)", fontSize: "12px", opacity: 0.7 }}
+          >
+            {result.error}
+          </span>
+        ) : (
+          <>
+            {result.warning && <WarningBadge message={result.warning} />}
+            <span
+              data-testid="result-value"
+              style={{
+                color: "var(--text-result)",
+                transition: "opacity 0.15s",
+              }}
+              className="hover:opacity-80"
+            >
+              {result.formatted}
+            </span>
+          </>
+        )}
+      </div>
     </div>
   );
 }

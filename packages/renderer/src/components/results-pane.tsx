@@ -6,6 +6,8 @@ import { ResultLine } from "./result-line";
 interface ResultsPaneProps {
   results: LineResult[];
   scrollTop: number;
+  /** Height of each editor line, so a wrapped line keeps its result aligned with the next one. */
+  lineHeights: number[];
   /** Line being typed on: its error is shown as a pending indicator instead. */
   editingLine: number | null;
   /** Line whose error was revealed by a blocked Enter. */
@@ -15,6 +17,7 @@ interface ResultsPaneProps {
 export function ResultsPane({
   results,
   scrollTop,
+  lineHeights,
   editingLine,
   revealedLine,
 }: ResultsPaneProps): React.JSX.Element {
@@ -40,6 +43,7 @@ export function ResultsPane({
           <ResultLine
             key={result.line}
             result={result}
+            height={lineHeights[result.line]}
             pending={!!result.error && result.line === editingLine && result.line !== revealedLine}
             revealed={result.line === revealedLine}
           />
