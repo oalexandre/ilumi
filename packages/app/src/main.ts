@@ -155,6 +155,41 @@ function createWindow(): void {
     event.preventDefault();
   });
 
+  // Minimize to tray instead of quitting on close
+  mainWindow.on("close", (event) => {
+    if (!app.isQuitting) {
+      event.preventDefault();
+      mainWindow?.hide();
+    }
+  });
+
+  mainWindow.on("focus", () => {
+    pluginLoader.reload();
+    // Refresh parse options after plugin reload (new functions/units may have been added)
+    doc.refreshParseOptions();
+    mainWindow?.webContents.send("numi:entitiesChanged");
+  });
+
+  if (isDev && process.env["ELECTRON_RENDERER_URL"]) {
+    mainWindow.loadURL(process.env["ELECTRON_RENDERER_URL"]);
+  } else {
+    mainWindow.loadFile(join(import.meta.dirname, "../renderer/index.html"));
+  }
+
+  // A destroyed window must not be reused: toggleWindow() and "activate" create a new one.
+  mainWindow.on("closed", () => {
+    mainWindow = null;
+  });
+
+  applyAlwaysOnTop();
+}
+
+/**
+ * IPC handlers and app-wide listeners. Registered once at startup, not per window:
+ * ipcMain.handle throws on a second registration of the same channel, so recreating the
+ * window used to crash the main process.
+ */
+function registerIpcHandlers(): void {
   ipcMain.handle("numi:evaluate", (_event, source: string) => {
     return doc.update(source);
   });
@@ -270,29 +305,6 @@ function createWindow(): void {
       mainWindow?.webContents.send("numi:themeChanged", effective);
     }
   });
-
-  // Minimize to tray instead of quitting on close
-  mainWindow.on("close", (event) => {
-    if (!app.isQuitting) {
-      event.preventDefault();
-      mainWindow?.hide();
-    }
-  });
-
-  mainWindow.on("focus", () => {
-    pluginLoader.reload();
-    // Refresh parse options after plugin reload (new functions/units may have been added)
-    doc.refreshParseOptions();
-    mainWindow?.webContents.send("numi:entitiesChanged");
-  });
-
-  if (isDev && process.env["ELECTRON_RENDERER_URL"]) {
-    mainWindow.loadURL(process.env["ELECTRON_RENDERER_URL"]);
-  } else {
-    mainWindow.loadFile(join(import.meta.dirname, "../renderer/index.html"));
-  }
-
-  applyAlwaysOnTop();
 }
 
 // Track quit intent for close-to-tray behavior
@@ -333,6 +345,7 @@ app.whenReady().then(() => {
   doc.refreshParseOptions();
   applyFormatSettings();
   createAppMenu();
+  registerIpcHandlers();
   createWindow();
   createTray(() => mainWindow);
   setupAutoUpdater(() => mainWindow);
